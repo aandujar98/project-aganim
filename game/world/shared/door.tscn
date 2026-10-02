@@ -1,0 +1,37 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://game/world/shared/door.gd" id="1_script"]
+[ext_resource type="Resource" path="res://game/world/shared/locked_door_message.tres" id="2_data"]
+
+[sub_resource type="RectangleShape2D" id="InteractionShape"]
+size = Vector2(40, 24)
+
+[sub_resource type="RectangleShape2D" id="SolidShape"]
+size = Vector2(28, 12)
+
+[node name="Door" type="Area2D"]
+collision_layer = 128
+collision_mask = 0
+monitoring = false
+script = ExtResource("1_script")
+interaction_text = "Open"
+locked_message = ExtResource("2_data")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("InteractionShape")
+
+[node name="Visual" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-14, -18, 14, -18, 14, 6, -14, 6)
+color = Color(0.3, 0.65, 0.72, 1)
+
+[node name="Solid" type="StaticBody2D" parent="."]
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Solid"]
+shape = SubResource("SolidShape")
+
+[node name="Frame" type="Line2D" parent="."]
+points = PackedVector2Array(-16, 7, -16, -20, 16, -20, 16, 7)
+width = 2.0
+default_color = Color(0.2, 0.25, 0.25, 1)

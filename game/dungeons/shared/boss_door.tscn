@@ -1,0 +1,8 @@
+[gd_scene format=3]
+[ext_resource type="PackedScene" path="res://game/dungeons/shared/dungeon_locked_door.tscn" id="1"]
+[ext_resource type="Script" path="res://game/dungeons/shared/boss_door.gd" id="2"]
+[node name="BossDoor" instance=ExtResource("1")]
+script = ExtResource("2")
+interaction_text = "Open Boss Door"
+[node name="Visual" parent="." index="1"]
+color = Color(0.6, 0.3, 0.7, 1)

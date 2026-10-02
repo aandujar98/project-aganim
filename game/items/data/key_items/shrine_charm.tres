@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Script" path="res://game/items/item_data.gd" id="1_item"]
+[ext_resource type="Texture2D" path="res://art/items/shrine_charm.svg" id="2_icon"]
+
+[resource]
+script = ExtResource("1_item")
+id = &"shrine_charm"
+display_name = "Mysterious Shrine Charm"
+description = "An old charm marked with a symbol you don't recognize."
+icon = ExtResource("2_icon")
+category = 1
+stackable = false
+max_stack = 1
+use_effect = &""
+effect_value = 0

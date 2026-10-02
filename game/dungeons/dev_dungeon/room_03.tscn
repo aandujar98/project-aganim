@@ -1,0 +1,238 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://game/world/shared/world_area.gd" id="world"]
+[ext_resource type="PackedScene" path="res://game/player/player.tscn" id="player"]
+[ext_resource type="PackedScene" path="res://game/world/shared/spawn_point.tscn" id="spawn"]
+[ext_resource type="PackedScene" path="res://game/world/shared/camera_bounds.tscn" id="camera"]
+[ext_resource type="PackedScene" path="res://game/ui/dialogue/dialogue_ui.tscn" id="dialogue"]
+[ext_resource type="Script" path="res://game/dungeons/shared/dungeon_room_controller.gd" id="controller"]
+[ext_resource type="PackedScene" path="res://game/dungeons/shared/dungeon_debug.tscn" id="debug"]
+[ext_resource type="PackedScene" path="res://game/world/shared/scene_entrance.tscn" id="travel"]
+[ext_resource type="PackedScene" path="res://game/dungeons/shared/dungeon_barrier.tscn" id="dungeon_barrier"]
+[ext_resource type="PackedScene" path="res://game/dungeons/shared/dungeon_switch.tscn" id="dungeon_switch"]
+
+[sub_resource type="RectangleShape2D" id="North"]
+size = Vector2(512, 16)
+
+[sub_resource type="RectangleShape2D" id="South"]
+size = Vector2(512, 16)
+
+[sub_resource type="RectangleShape2D" id="West"]
+size = Vector2(16, 256)
+
+[sub_resource type="RectangleShape2D" id="East"]
+size = Vector2(16, 256)
+
+[sub_resource type="RectangleShape2D" id="southLeft"]
+size = Vector2(216, 16)
+
+[sub_resource type="RectangleShape2D" id="southRight"]
+size = Vector2(216, 16)
+
+[sub_resource type="RectangleShape2D" id="Travel_south"]
+size = Vector2(40, 16)
+
+[sub_resource type="RectangleShape2D" id="eastUpper"]
+size = Vector2(16, 108)
+
+[sub_resource type="RectangleShape2D" id="eastLower"]
+size = Vector2(16, 108)
+
+[sub_resource type="RectangleShape2D" id="Travel_east"]
+size = Vector2(40, 16)
+
+[node name="DevRoom03" type="Node2D"]
+script = ExtResource("world")
+dungeon_id = &"dev_dungeon"
+
+[node name="Ground" type="Polygon2D" parent="."]
+z_index = -2
+polygon = PackedVector2Array(0, 0, 512, 0, 512, 288, 0, 288)
+color = Color(0.18, 0.22, 0.29, 1)
+
+[node name="CameraBounds" parent="." instance=ExtResource("camera")]
+bounds = Rect2i(0, 0, 512, 288)
+
+[node name="SpawnPoints" type="Node2D" parent="."]
+
+
+[node name="default" parent="SpawnPoints" instance=ExtResource("spawn")]
+position = Vector2(256, 208)
+spawn_id = &"default"
+facing_direction = Vector2(0, -1)
+
+[node name="Walls" type="Node2D" parent="."]
+
+
+[node name="North" type="StaticBody2D" parent="Walls"]
+position = Vector2(256, 8)
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/North"]
+shape = SubResource("North")
+
+[node name="Visual" type="Polygon2D" parent="Walls/North"]
+polygon = PackedVector2Array(-256.0, -8.0, 256.0, -8.0, 256.0, 8.0, -256.0, 8.0)
+color = Color(0.36, 0.4, 0.48, 1)
+
+[node name="South" type="StaticBody2D" parent="Walls"]
+position = Vector2(256, 280)
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/South"]
+shape = SubResource("South")
+
+[node name="Visual" type="Polygon2D" parent="Walls/South"]
+polygon = PackedVector2Array(-256.0, -8.0, 256.0, -8.0, 256.0, 8.0, -256.0, 8.0)
+color = Color(0.36, 0.4, 0.48, 1)
+
+[node name="West" type="StaticBody2D" parent="Walls"]
+position = Vector2(8, 144)
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/West"]
+shape = SubResource("West")
+
+[node name="Visual" type="Polygon2D" parent="Walls/West"]
+polygon = PackedVector2Array(-8.0, -128.0, 8.0, -128.0, 8.0, 128.0, -8.0, 128.0)
+color = Color(0.36, 0.4, 0.48, 1)
+
+[node name="East" type="StaticBody2D" parent="Walls"]
+position = Vector2(504, 144)
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/East"]
+shape = SubResource("East")
+
+[node name="Visual" type="Polygon2D" parent="Walls/East"]
+polygon = PackedVector2Array(-8.0, -128.0, 8.0, -128.0, 8.0, 128.0, -8.0, 128.0)
+color = Color(0.36, 0.4, 0.48, 1)
+
+[node name="Enemies" type="Node2D" parent="."]
+
+
+[node name="RoomController" type="Node" parent="."]
+script = ExtResource("controller")
+dungeon_id = &"dev_dungeon"
+room_id = &"dd_room_03"
+clear_required = false
+encounter = 0
+
+[node name="Objects" type="Node2D" parent="."]
+
+
+[node name="Entrances" type="Node2D" parent="."]
+
+
+[node name="Player" parent="." instance=ExtResource("player")]
+
+
+[node name="DialogueUI" parent="." instance=ExtResource("dialogue")]
+
+
+[node name="DungeonDebug" parent="." instance=ExtResource("debug")]
+dungeon_id = &"dev_dungeon"
+room_title = "DevDungeon / Switch puzzle"
+instructions = "Activate BOTH blue switches with E · Exit east"
+
+[node name="southLeft" type="StaticBody2D" parent="Walls"]
+position = Vector2(124, 236)
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/southLeft"]
+shape = SubResource("southLeft")
+
+[node name="Visual" type="Polygon2D" parent="Walls/southLeft"]
+polygon = PackedVector2Array(-108.0, -8.0, 108.0, -8.0, 108.0, 8.0, -108.0, 8.0)
+color = Color(0.36, 0.4, 0.48, 1)
+
+[node name="southRight" type="StaticBody2D" parent="Walls"]
+position = Vector2(388, 236)
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/southRight"]
+shape = SubResource("southRight")
+
+[node name="Visual" type="Polygon2D" parent="Walls/southRight"]
+polygon = PackedVector2Array(-108.0, -8.0, 108.0, -8.0, 108.0, 8.0, -108.0, 8.0)
+color = Color(0.36, 0.4, 0.48, 1)
+
+[node name="SouthExit" parent="Entrances" instance=ExtResource("travel")]
+position = Vector2(256, 262)
+rotation = 0
+destination_scene = "res://game/dungeons/dev_dungeon/room_02.tscn"
+destination_spawn_id = &"from_north"
+
+[node name="CollisionShape2D" parent="Entrances/SouthExit" index="0"]
+shape = SubResource("Travel_south")
+
+[node name="Visual" parent="Entrances/SouthExit" index="1"]
+polygon = PackedVector2Array(-20, -8, 20, -8, 20, 8, -20, 8)
+
+[node name="from_south" parent="SpawnPoints" instance=ExtResource("spawn")]
+position = Vector2(256, 208)
+spawn_id = &"from_south"
+facing_direction = Vector2(0, -1)
+
+[node name="eastUpper" type="StaticBody2D" parent="Walls"]
+position = Vector2(460, 66)
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/eastUpper"]
+shape = SubResource("eastUpper")
+
+[node name="Visual" type="Polygon2D" parent="Walls/eastUpper"]
+polygon = PackedVector2Array(-8.0, -54.0, 8.0, -54.0, 8.0, 54.0, -8.0, 54.0)
+color = Color(0.36, 0.4, 0.48, 1)
+
+[node name="eastLower" type="StaticBody2D" parent="Walls"]
+position = Vector2(460, 222)
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/eastLower"]
+shape = SubResource("eastLower")
+
+[node name="Visual" type="Polygon2D" parent="Walls/eastLower"]
+polygon = PackedVector2Array(-8.0, -54.0, 8.0, -54.0, 8.0, 54.0, -8.0, 54.0)
+color = Color(0.36, 0.4, 0.48, 1)
+
+[node name="EastGate" parent="Objects" instance=ExtResource("dungeon_barrier")]
+position = Vector2(460, 144)
+rotation = 1.570796
+dungeon_id = &"dev_dungeon"
+required_switch_ids = Array[StringName]([&"dd_switch_a", &"dd_switch_b"])
+
+[node name="EastExit" parent="Entrances" instance=ExtResource("travel")]
+position = Vector2(486, 144)
+rotation = 1.570796
+destination_scene = "res://game/dungeons/dev_dungeon/item_room.tscn"
+destination_spawn_id = &"from_west"
+
+[node name="CollisionShape2D" parent="Entrances/EastExit" index="0"]
+shape = SubResource("Travel_east")
+
+[node name="Visual" parent="Entrances/EastExit" index="1"]
+polygon = PackedVector2Array(-20, -8, 20, -8, 20, 8, -20, 8)
+
+[node name="from_east" parent="SpawnPoints" instance=ExtResource("spawn")]
+position = Vector2(432, 144)
+spawn_id = &"from_east"
+facing_direction = Vector2(-1, 0)
+
+[node name="Switch_A" parent="Objects" instance=ExtResource("dungeon_switch")]
+position = Vector2(170, 100)
+dungeon_id = &"dev_dungeon"
+switch_id = &"dd_switch_a"
+
+[node name="Switch_B" parent="Objects" instance=ExtResource("dungeon_switch")]
+position = Vector2(320, 170)
+dungeon_id = &"dev_dungeon"
+switch_id = &"dd_switch_b"

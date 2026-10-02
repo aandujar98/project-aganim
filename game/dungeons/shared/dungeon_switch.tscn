@@ -1,0 +1,15 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://game/dungeons/shared/dungeon_switch.gd" id="1"]
+[sub_resource type="RectangleShape2D" id="Shape"]
+size = Vector2(24, 24)
+[node name="DungeonSwitch" type="Area2D"]
+collision_layer = 128
+collision_mask = 0
+monitoring = false
+script = ExtResource("1")
+interaction_text = "Activate Switch"
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("Shape")
+[node name="Visual" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-10, -10, 10, -10, 10, 10, -10, 10)
+color = Color(0.4, 0.5, 0.65, 1)

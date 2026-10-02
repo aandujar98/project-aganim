@@ -1,0 +1,5 @@
+[gd_scene format=3]
+[ext_resource type="PackedScene" path="res://game/world/shared/treasure_chest.tscn" id="1"]
+[ext_resource type="Script" path="res://game/dungeons/shared/dungeon_chest.gd" id="2"]
+[node name="DungeonChest" instance=ExtResource("1")]
+script = ExtResource("2")

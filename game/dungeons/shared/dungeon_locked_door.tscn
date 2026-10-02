@@ -1,0 +1,22 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://game/dungeons/shared/dungeon_locked_door.gd" id="1"]
+[sub_resource type="RectangleShape2D" id="Interact"]
+size = Vector2(54, 24)
+[sub_resource type="RectangleShape2D" id="Solid"]
+size = Vector2(48, 16)
+[node name="DungeonLockedDoor" type="Area2D"]
+collision_layer = 128
+collision_mask = 0
+monitoring = false
+script = ExtResource("1")
+interaction_text = "Unlock with Small Key"
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("Interact")
+[node name="Visual" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-24, -8, 24, -8, 24, 8, -24, 8)
+color = Color(0.85, 0.64, 0.28, 1)
+[node name="Solid" type="StaticBody2D" parent="."]
+collision_layer = 1
+collision_mask = 6
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Solid"]
+shape = SubResource("Solid")

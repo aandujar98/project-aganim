@@ -1,0 +1,242 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://game/world/shared/world_area.gd" id="world"]
+[ext_resource type="PackedScene" path="res://game/player/player.tscn" id="player"]
+[ext_resource type="PackedScene" path="res://game/world/shared/spawn_point.tscn" id="spawn"]
+[ext_resource type="PackedScene" path="res://game/world/shared/camera_bounds.tscn" id="camera"]
+[ext_resource type="PackedScene" path="res://game/ui/dialogue/dialogue_ui.tscn" id="dialogue"]
+[ext_resource type="Script" path="res://game/dungeons/shared/dungeon_room_controller.gd" id="controller"]
+[ext_resource type="PackedScene" path="res://game/dungeons/shared/dungeon_debug.tscn" id="debug"]
+[ext_resource type="PackedScene" path="res://game/world/shared/scene_entrance.tscn" id="travel"]
+[ext_resource type="PackedScene" path="res://game/dungeons/shared/dungeon_barrier.tscn" id="dungeon_barrier"]
+[ext_resource type="PackedScene" path="res://game/dungeons/shared/dungeon_chest.tscn" id="chest"]
+[ext_resource type="PackedScene" path="res://game/dungeons/shared/ancient_brazier.tscn" id="ancient_brazier"]
+
+[sub_resource type="RectangleShape2D" id="North"]
+size = Vector2(512, 16)
+
+[sub_resource type="RectangleShape2D" id="South"]
+size = Vector2(512, 16)
+
+[sub_resource type="RectangleShape2D" id="West"]
+size = Vector2(16, 256)
+
+[sub_resource type="RectangleShape2D" id="East"]
+size = Vector2(16, 256)
+
+[sub_resource type="RectangleShape2D" id="westUpper"]
+size = Vector2(16, 108)
+
+[sub_resource type="RectangleShape2D" id="westLower"]
+size = Vector2(16, 108)
+
+[sub_resource type="RectangleShape2D" id="Travel_west"]
+size = Vector2(40, 16)
+
+[sub_resource type="RectangleShape2D" id="northLeft"]
+size = Vector2(216, 16)
+
+[sub_resource type="RectangleShape2D" id="northRight"]
+size = Vector2(216, 16)
+
+[sub_resource type="RectangleShape2D" id="Travel_north"]
+size = Vector2(40, 16)
+
+[node name="DevItemRoom" type="Node2D"]
+script = ExtResource("world")
+dungeon_id = &"dev_dungeon"
+
+[node name="Ground" type="Polygon2D" parent="."]
+z_index = -2
+polygon = PackedVector2Array(0, 0, 512, 0, 512, 288, 0, 288)
+color = Color(0.18, 0.22, 0.29, 1)
+
+[node name="CameraBounds" parent="." instance=ExtResource("camera")]
+bounds = Rect2i(0, 0, 512, 288)
+
+[node name="SpawnPoints" type="Node2D" parent="."]
+
+
+[node name="default" parent="SpawnPoints" instance=ExtResource("spawn")]
+position = Vector2(256, 208)
+spawn_id = &"default"
+facing_direction = Vector2(0, -1)
+
+[node name="Walls" type="Node2D" parent="."]
+
+
+[node name="North" type="StaticBody2D" parent="Walls"]
+position = Vector2(256, 8)
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/North"]
+shape = SubResource("North")
+
+[node name="Visual" type="Polygon2D" parent="Walls/North"]
+polygon = PackedVector2Array(-256.0, -8.0, 256.0, -8.0, 256.0, 8.0, -256.0, 8.0)
+color = Color(0.36, 0.4, 0.48, 1)
+
+[node name="South" type="StaticBody2D" parent="Walls"]
+position = Vector2(256, 280)
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/South"]
+shape = SubResource("South")
+
+[node name="Visual" type="Polygon2D" parent="Walls/South"]
+polygon = PackedVector2Array(-256.0, -8.0, 256.0, -8.0, 256.0, 8.0, -256.0, 8.0)
+color = Color(0.36, 0.4, 0.48, 1)
+
+[node name="West" type="StaticBody2D" parent="Walls"]
+position = Vector2(8, 144)
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/West"]
+shape = SubResource("West")
+
+[node name="Visual" type="Polygon2D" parent="Walls/West"]
+polygon = PackedVector2Array(-8.0, -128.0, 8.0, -128.0, 8.0, 128.0, -8.0, 128.0)
+color = Color(0.36, 0.4, 0.48, 1)
+
+[node name="East" type="StaticBody2D" parent="Walls"]
+position = Vector2(504, 144)
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/East"]
+shape = SubResource("East")
+
+[node name="Visual" type="Polygon2D" parent="Walls/East"]
+polygon = PackedVector2Array(-8.0, -128.0, 8.0, -128.0, 8.0, 128.0, -8.0, 128.0)
+color = Color(0.36, 0.4, 0.48, 1)
+
+[node name="Enemies" type="Node2D" parent="."]
+
+
+[node name="RoomController" type="Node" parent="."]
+script = ExtResource("controller")
+dungeon_id = &"dev_dungeon"
+room_id = &"dd_item_room"
+clear_required = false
+encounter = 0
+
+[node name="Objects" type="Node2D" parent="."]
+
+
+[node name="Entrances" type="Node2D" parent="."]
+
+
+[node name="Player" parent="." instance=ExtResource("player")]
+
+
+[node name="DialogueUI" parent="." instance=ExtResource("dialogue")]
+
+
+[node name="DungeonDebug" parent="." instance=ExtResource("debug")]
+dungeon_id = &"dev_dungeon"
+room_title = "DevDungeon / Dungeon item"
+instructions = "Chest: Ember Gauntlet · Light brazier with E · Exit north"
+
+[node name="westUpper" type="StaticBody2D" parent="Walls"]
+position = Vector2(52, 66)
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/westUpper"]
+shape = SubResource("westUpper")
+
+[node name="Visual" type="Polygon2D" parent="Walls/westUpper"]
+polygon = PackedVector2Array(-8.0, -54.0, 8.0, -54.0, 8.0, 54.0, -8.0, 54.0)
+color = Color(0.36, 0.4, 0.48, 1)
+
+[node name="westLower" type="StaticBody2D" parent="Walls"]
+position = Vector2(52, 222)
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/westLower"]
+shape = SubResource("westLower")
+
+[node name="Visual" type="Polygon2D" parent="Walls/westLower"]
+polygon = PackedVector2Array(-8.0, -54.0, 8.0, -54.0, 8.0, 54.0, -8.0, 54.0)
+color = Color(0.36, 0.4, 0.48, 1)
+
+[node name="WestExit" parent="Entrances" instance=ExtResource("travel")]
+position = Vector2(26, 144)
+rotation = 1.570796
+destination_scene = "res://game/dungeons/dev_dungeon/room_03.tscn"
+destination_spawn_id = &"from_east"
+
+[node name="CollisionShape2D" parent="Entrances/WestExit" index="0"]
+shape = SubResource("Travel_west")
+
+[node name="Visual" parent="Entrances/WestExit" index="1"]
+polygon = PackedVector2Array(-20, -8, 20, -8, 20, 8, -20, 8)
+
+[node name="from_west" parent="SpawnPoints" instance=ExtResource("spawn")]
+position = Vector2(80, 144)
+spawn_id = &"from_west"
+facing_direction = Vector2(1, 0)
+
+[node name="northLeft" type="StaticBody2D" parent="Walls"]
+position = Vector2(124, 52)
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/northLeft"]
+shape = SubResource("northLeft")
+
+[node name="Visual" type="Polygon2D" parent="Walls/northLeft"]
+polygon = PackedVector2Array(-108.0, -8.0, 108.0, -8.0, 108.0, 8.0, -108.0, 8.0)
+color = Color(0.36, 0.4, 0.48, 1)
+
+[node name="northRight" type="StaticBody2D" parent="Walls"]
+position = Vector2(388, 52)
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/northRight"]
+shape = SubResource("northRight")
+
+[node name="Visual" type="Polygon2D" parent="Walls/northRight"]
+polygon = PackedVector2Array(-108.0, -8.0, 108.0, -8.0, 108.0, 8.0, -108.0, 8.0)
+color = Color(0.36, 0.4, 0.48, 1)
+
+[node name="NorthGate" parent="Objects" instance=ExtResource("dungeon_barrier")]
+position = Vector2(256, 52)
+rotation = 0
+dungeon_id = &"dev_dungeon"
+required_switch_ids = Array[StringName]([&"dd_brazier"])
+
+[node name="NorthExit" parent="Entrances" instance=ExtResource("travel")]
+position = Vector2(256, 26)
+rotation = 0
+destination_scene = "res://game/dungeons/dev_dungeon/miniboss_room.tscn"
+destination_spawn_id = &"from_south"
+
+[node name="CollisionShape2D" parent="Entrances/NorthExit" index="0"]
+shape = SubResource("Travel_north")
+
+[node name="Visual" parent="Entrances/NorthExit" index="1"]
+polygon = PackedVector2Array(-20, -8, 20, -8, 20, 8, -20, 8)
+
+[node name="from_north" parent="SpawnPoints" instance=ExtResource("spawn")]
+position = Vector2(256, 80)
+spawn_id = &"from_north"
+facing_direction = Vector2(0, 1)
+
+[node name="Item" parent="Objects" instance=ExtResource("chest")]
+position = Vector2(205, 144)
+dungeon_id = &"dev_dungeon"
+chest_id = &"dd_chest_item_room_item"
+reward_kind = 2
+reward_item_id = &"ember_gauntlet"
+reward_amount = 1
+
+[node name="Brazier" parent="Objects" instance=ExtResource("ancient_brazier")]
+position = Vector2(330, 120)
+dungeon_id = &"dev_dungeon"
+switch_id = &"dd_brazier"

@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="DialogueData" format=3]
+
+[ext_resource type="Script" path="res://scripts/shared/dialogue_data.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/shared/dialogue_line.gd" id="2_line"]
+
+[sub_resource type="Resource" id="Line_0"]
+script = ExtResource("2_line")
+speaker_name = "Resident"
+text = "Hey. You must be new around here."
+
+[sub_resource type="Resource" id="Line_1"]
+script = ExtResource("2_line")
+speaker_name = "Resident"
+text = "People have been hearing strange bells near the old shrine lately."
+
+[sub_resource type="Resource" id="Line_2"]
+script = ExtResource("2_line")
+speaker_name = "Resident"
+text = "If you're heading that way, be careful."
+
+[resource]
+script = ExtResource("1_data")
+lines = Array[ExtResource("2_line")]([SubResource("Line_0"), SubResource("Line_1"), SubResource("Line_2")])

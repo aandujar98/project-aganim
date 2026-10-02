@@ -1,0 +1,227 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://game/world/shared/world_area.gd" id="1_area"]
+[ext_resource type="PackedScene" path="res://game/player/player.tscn" id="2_player"]
+[ext_resource type="PackedScene" path="res://game/world/shared/spawn_point.tscn" id="3_spawn"]
+[ext_resource type="PackedScene" path="res://game/world/shared/camera_bounds.tscn" id="4_bounds"]
+[ext_resource type="PackedScene" path="res://game/world/shared/scene_door.tscn" id="5_door"]
+[ext_resource type="PackedScene" path="res://game/world/shared/scene_entrance.tscn" id="6_entrance"]
+[ext_resource type="PackedScene" path="res://game/ui/dialogue/dialogue_ui.tscn" id="7_dialogue"]
+[ext_resource type="PackedScene" path="res://game/world/shared/sign.tscn" id="8_sign"]
+
+[ext_resource type="PackedScene" path="res://game/items/pickup.tscn" id="8_inventory_pickup"]
+
+[sub_resource type="RectangleShape2D" id="NorthWallShape"]
+size = Vector2(768, 16)
+
+[sub_resource type="RectangleShape2D" id="SouthWallShape"]
+size = Vector2(768, 16)
+
+[sub_resource type="RectangleShape2D" id="WestWallShape"]
+size = Vector2(16, 400)
+
+[sub_resource type="RectangleShape2D" id="EastWallShape"]
+size = Vector2(16, 400)
+
+[sub_resource type="RectangleShape2D" id="HouseShape"]
+size = Vector2(144, 80)
+
+[sub_resource type="RectangleShape2D" id="RockShape"]
+size = Vector2(48, 28)
+
+[node name="TestExterior" type="Node2D"]
+script = ExtResource("1_area")
+
+[node name="Ground" type="Polygon2D" parent="."]
+z_index = -2
+polygon = PackedVector2Array(0, 0, 768, 0, 768, 432, 0, 432)
+color = Color(0.38, 0.49, 0.4, 1)
+
+[node name="CameraBounds" parent="." instance=ExtResource("4_bounds")]
+bounds = Rect2i(0, 0, 768, 432)
+
+[node name="SpawnPoints" type="Node2D" parent="."]
+
+[node name="default" parent="SpawnPoints" instance=ExtResource("3_spawn")]
+position = Vector2(192, 230)
+spawn_id = &"default"
+facing_direction = Vector2(0, 1)
+
+[node name="house_front" parent="SpawnPoints" instance=ExtResource("3_spawn")]
+position = Vector2(384, 190)
+spawn_id = &"house_front"
+facing_direction = Vector2(0, 1)
+
+[node name="from_east" parent="SpawnPoints" instance=ExtResource("3_spawn")]
+position = Vector2(690, 230)
+spawn_id = &"from_east"
+facing_direction = Vector2(-1, 0)
+
+[node name="Obstacles" type="Node2D" parent="."]
+
+[node name="NorthWall" type="StaticBody2D" parent="Obstacles"]
+position = Vector2(384.0, 8)
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Obstacles/NorthWall"]
+shape = SubResource("NorthWallShape")
+
+[node name="Visual" type="Polygon2D" parent="Obstacles/NorthWall"]
+polygon = PackedVector2Array(-384.0, -8.0, 384.0, -8.0, 384.0, 8.0, -384.0, 8.0)
+color = Color(0.2, 0.26, 0.3, 1)
+
+[node name="SouthWall" type="StaticBody2D" parent="Obstacles"]
+position = Vector2(384.0, 424)
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Obstacles/SouthWall"]
+shape = SubResource("SouthWallShape")
+
+[node name="Visual" type="Polygon2D" parent="Obstacles/SouthWall"]
+polygon = PackedVector2Array(-384.0, -8.0, 384.0, -8.0, 384.0, 8.0, -384.0, 8.0)
+color = Color(0.2, 0.26, 0.3, 1)
+
+[node name="WestWall" type="StaticBody2D" parent="Obstacles"]
+position = Vector2(8, 216.0)
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Obstacles/WestWall"]
+shape = SubResource("WestWallShape")
+
+[node name="Visual" type="Polygon2D" parent="Obstacles/WestWall"]
+polygon = PackedVector2Array(-8.0, -200.0, 8.0, -200.0, 8.0, 200.0, -8.0, 200.0)
+color = Color(0.2, 0.26, 0.3, 1)
+
+[node name="EastWall" type="StaticBody2D" parent="Obstacles"]
+position = Vector2(760, 216.0)
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Obstacles/EastWall"]
+shape = SubResource("EastWallShape")
+
+[node name="Visual" type="Polygon2D" parent="Obstacles/EastWall"]
+polygon = PackedVector2Array(-8.0, -200.0, 8.0, -200.0, 8.0, 200.0, -8.0, 200.0)
+color = Color(0.2, 0.26, 0.3, 1)
+
+[node name="House" type="StaticBody2D" parent="Obstacles"]
+position = Vector2(384, 96)
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Obstacles/House"]
+shape = SubResource("HouseShape")
+
+[node name="Visual" type="Polygon2D" parent="Obstacles/House"]
+polygon = PackedVector2Array(-72.0, -40.0, 72.0, -40.0, 72.0, 40.0, -72.0, 40.0)
+color = Color(0.2, 0.26, 0.3, 1)
+
+[node name="Rock" type="StaticBody2D" parent="Obstacles"]
+position = Vector2(245, 330)
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Obstacles/Rock"]
+shape = SubResource("RockShape")
+
+[node name="Visual" type="Polygon2D" parent="Obstacles/Rock"]
+polygon = PackedVector2Array(-24.0, -14.0, 24.0, -14.0, 24.0, 14.0, -24.0, 14.0)
+color = Color(0.2, 0.26, 0.3, 1)
+
+[node name="Entrances" type="Node2D" parent="."]
+
+[node name="Path" type="Polygon2D" parent="."]
+z_index = -1
+polygon = PackedVector2Array(16, 204, 752, 204, 752, 272, 16, 272)
+color = Color(0.65, 0.65, 0.55, 1)
+
+[node name="HousePath" type="Polygon2D" parent="."]
+z_index = -1
+polygon = PackedVector2Array(362, 138, 406, 138, 406, 250, 362, 250)
+color = Color(0.65, 0.65, 0.55, 1)
+
+[node name="HouseDoor" parent="Entrances" instance=ExtResource("5_door")]
+position = Vector2(384, 144)
+destination_scene = "res://game/world/interiors/transition_test/test_interior.tscn"
+destination_spawn_id = &"house_inside"
+
+[node name="EastRegion" parent="Entrances" instance=ExtResource("6_entrance")]
+position = Vector2(738, 240)
+destination_scene = "res://game/world/districts/transition_test/test_room_b.tscn"
+destination_spawn_id = &"from_west"
+transition_mode = 1
+
+[node name="HouseLabel" type="Label" parent="."]
+offset_left = 331.0
+offset_top = 65.0
+offset_right = 441.0
+offset_bottom = 81.0
+theme_override_font_sizes/font_size = 10
+mouse_filter = 2
+text = "TEST HOUSE"
+
+[node name="Sign" parent="." instance=ExtResource("8_sign")]
+position = Vector2(480, 180)
+
+[node name="Player" parent="." instance=ExtResource("2_player")]
+
+[node name="DialogueUI" parent="." instance=ExtResource("7_dialogue")]
+
+[node name="DebugOverlay" type="CanvasLayer" parent="."]
+
+[node name="Status" type="Label" parent="DebugOverlay"]
+offset_left = 6.0
+offset_top = 4.0
+offset_right = 378.0
+offset_bottom = 20.0
+theme_override_font_sizes/font_size = 10
+mouse_filter = 2
+text = ""
+
+[node name="Instructions" type="Label" parent="DebugOverlay"]
+offset_left = 6.0
+offset_top = 196.0
+offset_right = 378.0
+offset_bottom = 212.0
+theme_override_font_sizes/font_size = 9
+mouse_filter = 2
+text = "House: face cyan door + Interact · East: walk into blue zone"
+
+[node name="InventorySamples" type="Node2D" parent="."]
+
+[node name="HealingDrinks" parent="InventorySamples" instance=ExtResource("8_inventory_pickup")]
+position = Vector2(224, 230)
+item_id = &"small_healing_drink"
+amount = 2
+
+[node name="SpiritFragments" parent="InventorySamples" instance=ExtResource("8_inventory_pickup")]
+position = Vector2(264, 230)
+item_id = &"spirit_fragment"
+amount = 3
+
+[node name="ShrineCharm" parent="InventorySamples" instance=ExtResource("8_inventory_pickup")]
+position = Vector2(304, 230)
+item_id = &"shrine_charm"
+
+[node name="DevDungeonEntrance" parent="Entrances" instance=ExtResource("5_door")]
+position = Vector2(580, 330)
+destination_scene = "res://game/dungeons/dev_dungeon/entrance.tscn"
+destination_spawn_id = &"from_south"
+interaction_text = "Enter DevDungeon"
+
+[node name="dungeon_return" parent="SpawnPoints" instance=ExtResource("3_spawn")]
+position = Vector2(580, 366)
+spawn_id = &"dungeon_return"
+facing_direction = Vector2(0, 1)
+
+[node name="DungeonLabel" type="Label" parent="."]
+offset_left = 530.0
+offset_top = 299.0
+offset_right = 646.0
+offset_bottom = 315.0
+theme_override_font_sizes/font_size = 10
+text = "DEV DUNGEON"
+mouse_filter = 2

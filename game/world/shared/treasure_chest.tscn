@@ -1,0 +1,38 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://game/world/shared/treasure_chest.gd" id="1_script"]
+
+[sub_resource type="RectangleShape2D" id="InteractionShape"]
+size = Vector2(36, 28)
+
+[sub_resource type="RectangleShape2D" id="SolidShape"]
+size = Vector2(24, 16)
+
+[node name="TreasureChest" type="Area2D"]
+collision_layer = 128
+collision_mask = 0
+monitoring = false
+script = ExtResource("1_script")
+interaction_text = "Open"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("InteractionShape")
+
+[node name="Visual" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-12, -8, 12, -8, 12, 8, -12, 8)
+color = Color(0.59, 0.37, 0.2, 1)
+
+[node name="Solid" type="StaticBody2D" parent="."]
+collision_layer = 1
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Solid"]
+shape = SubResource("SolidShape")
+
+[node name="Lid" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-12, -11, 12, -11, 12, -3, -12, -3)
+color = Color(0.92, 0.72, 0.32, 1)
+
+[node name="Latch" type="Polygon2D" parent="Lid"]
+polygon = PackedVector2Array(-2, -8, 2, -8, 2, -2, -2, -2)
+color = Color(1, 0.93, 0.59, 1)
