@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="QuestData" format=3]
+[ext_resource type="Script" path="res://game/quests/quest_data.gd" id="1"]
+[ext_resource type="Script" path="res://game/quests/quest_objective_data.gd" id="2"]
+[ext_resource type="Script" path="res://game/quests/quest_reward_data.gd" id="3"]
+[sub_resource type="Resource" id="FindCharm"]
+script = ExtResource("2")
+type = 1
+target_id = &"lost_lucky_charm"
+required_amount = 1
+description = "Find Mrs. Sato's lucky charm near the old shrine."
+consume_on_turn_in = true
+[sub_resource type="Resource" id="Drinks"]
+script = ExtResource("3")
+type = 0
+item_id = &"small_healing_drink"
+amount = 2
+[sub_resource type="Resource" id="Yen"]
+script = ExtResource("3")
+type = 3
+amount = 500
+[resource]
+script = ExtResource("1")
+id = &"a_small_favor"
+title = "A Small Favor"
+description = "Mrs. Sato lost her treasured old lucky charm near the small neighborhood shrine."
+objectives = Array[ExtResource("2")]([SubResource("FindCharm")])
+rewards = Array[ExtResource("3")]([SubResource("Drinks"), SubResource("Yen")])
+require_turn_in = true
+turn_in_npc_id = &"mrs_sato"
+turn_in_description = "Return the lucky charm to Mrs. Sato."
+ready_message = "Quest Updated: Return to Mrs. Sato."

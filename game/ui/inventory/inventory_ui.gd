@@ -144,7 +144,7 @@ func _rebuild() -> void:
 func _matches_category(item: ItemData) -> bool:
 	match tabs.current_tab:
 		1: return item.category == ItemData.ItemCategory.CONSUMABLE
-		2: return item.category in [ItemData.ItemCategory.KEY_ITEM, ItemData.ItemCategory.DUNGEON_ITEM]
+		2: return item.category in [ItemData.ItemCategory.KEY_ITEM, ItemData.ItemCategory.DUNGEON_ITEM, ItemData.ItemCategory.QUEST_ITEM]
 		3: return item.category == ItemData.ItemCategory.MATERIAL or item.category == ItemData.ItemCategory.COLLECTIBLE
 	return true
 
@@ -191,6 +191,10 @@ func _on_item_added(item_id: StringName, amount: int) -> void:
 		var player: CharacterBody2D = get_tree().get_first_node_in_group("player") as CharacterBody2D
 		# Chests already use shared dialogue; avoid a second overlapping message.
 		if is_instance_valid(player) and player.state == player.PlayerState.NORMAL:
-			$Notification/Label.text = message
-			acquired_notification.show()
-			notification_timer.start()
+			show_notification(message)
+
+
+func show_notification(message: String) -> void:
+	$Notification/Label.text = message
+	acquired_notification.show()
+	notification_timer.start()

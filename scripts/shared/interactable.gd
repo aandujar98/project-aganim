@@ -4,6 +4,7 @@ extends Area2D
 signal interaction_started
 signal interaction_finished
 
+@export var object_id: StringName
 @export var interaction_text: String = "Interact"
 @export var enabled: bool = true
 
@@ -24,16 +25,20 @@ func _begin(actor: Node) -> bool:
 	_player = actor
 	_player.interaction_cancelled.connect(_on_cancelled)
 	interaction_started.emit()
-	return true
+	get_node("/root/QuestManager").record_event(QuestObjectiveData.ObjectiveType.INTERACT_WITH_OBJECT, object_id)
+	# Event listeners may cancel interaction through hurt/death or scene removal.
+	return is_instance_valid(_player) and _player.is_inside_tree()
 
 
-func _show_dialogue(actor: Node, manager: DialogueManager, data: DialogueData) -> void:
+func _show_dialogue(actor: Node, manager: DialogueManager, data: DialogueData) -> bool:
 	if not is_instance_valid(manager) or not manager.can_start(data):
-		return
+		return false
 	if _begin(actor):
 		_dialogue = manager
-		if not manager.start(data, actor, self, _finish):
-			_finish()
+		if manager.start(data, actor, self, _finish):
+			return true
+		_finish()
+	return false
 
 
 func _finish() -> void:

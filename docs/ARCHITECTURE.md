@@ -18,13 +18,13 @@ Scenes (`.tscn`), feature-specific GDScript (`.gd`), and resource definitions (`
 - `game/npcs/`: the reusable static NPC scene/script and three-line test dialogue resource.
 - `game/enemies/`: reusable enemy scenes and scripts. `slime.tscn` / `slime.gd` is the single basic enemy type in Phase 2.
 - `game/items/`: ItemData, the item registry, inventory entries/manager, reusable real-item pickups, and category-organized definitions under `data/`.
-- `game/quests/`: future quest definitions and related code.
+- `game/quests/`: static quest/objective/reward resources, registry, runtime state, manager, configurable NPC offers, pickups, location triggers, and development quest content.
 - `game/world/districts/`: outdoor areas, including the existing placeholder test district.
 - `game/world/interiors/`: indoor locations.
 - `game/world/shared/`: reusable world objects, including the sign, physical door, and treasure chest with their message resources.
-- `game/dungeons/`: future dungeon scenes and rooms.
+- `game/dungeons/`: reusable dungeon state/objects and the configured DevDungeon prototype rooms.
 - `game/ui/hud/`: in-game HUD scenes.
-- `game/ui/menus/`: menus and shared menu screens.
+- `game/ui/menus/`: quest journal, shop UI, and the Phase 9 save-slot screen.
 - `game/ui/inventory/`: persistent inventory CanvasLayer screen, built-in focused controls, and item-acquired notification.
 - `game/ui/dialogue/`: the reusable CanvasLayer dialogue UI and focused scene-local DialogueManager script.
 
@@ -33,7 +33,7 @@ These folders reserve places for future work; they do not imply implemented syst
 ## Shared scripts and resources
 
 - `scripts/shared/`: GDScript reused across multiple features.
-- `scripts/save/`: future save code and schema definitions. Actual player saves belong in `user://`, outside the repository; Phase 0 adds no save/load behavior.
+- `scripts/save/`: SaveManager, versioned validation/helpers, PlayerProfile, and focused WorldState runtime flags. Actual player saves belong in `user://saves/`, outside the repository.
 - `resources/themes/`: shared Godot UI themes.
 - `resources/shared/`: resources used by multiple features.
 
@@ -75,7 +75,7 @@ Actors respond to accepted hits with a hurt state and knockback, without editing
 - The slash rectangle is 28 × 22 pixels, centered 24 pixels in front of the feet origin and rotated to the cardinal direction. A yellow placeholder shows its range; idle/walk animations resume afterward.
 - Sword knockback starts at 110 pixels/second; the enemy's decaying hurt movement lasts 0.18 seconds.
 - Player post-hit invulnerability: 0.75 seconds. Red tint marks hurt; simple alpha flashing marks the remaining protected period.
-- Damage interrupts a swing; death disables sword/hurt interactions and control, dims the player, and prints a restart instruction. Stop and rerun DevTest to restart; there is no respawn/save/Game Over system.
+- Damage interrupts a swing; death disables sword/hurt interactions and control, dims the player, and prints a restart instruction. Stop and rerun DevTest to restart; there is no automatic respawn/Game Over system. Phase 9 allows manually loading an existing slot or starting New Game.
 
 ### One basic enemy
 
@@ -139,7 +139,7 @@ DevTest assigns its DialogueUI to `Player/InteractionDetector.dialogue_manager`.
 - Chest: retains the 0.45-second lid tween and scoped interaction lock. Phase 5 replaces the fake message-only reward with exported `reward_item_id` / `reward_amount`, inventory acceptance, and a generated shared-dialogue reward line. Invalid or rejected rewards keep it closed. Completion emits `opened(reward_item_id)` once and the chest remains open in that scene instance.
 - Pickup: automatic NORMAL Player-body collection, real `item_id` / `amount` fields, inventory acceptance before disappearance, local `collected` signal, deferred monitoring disable, and safe queued removal. Sprite icons replace the temporary yellow diamonds; a magenta fallback marks missing item/icon data. Failed additions stay in the world and can be retried by leaving/re-entering.
 
-Phase 3 originally used message-only rewards and a pickup counter. Phase 5 replaces those paths with inventory items, while preserving interaction behavior. Currency and save/world persistence remain absent; the old message resource is preserved but unused.
+Phase 3 originally used message-only rewards and a pickup counter. Phase 5 replaces those paths with inventory items, while preserving interaction behavior. Phase 8 adds currency and Phase 9 adds explicit save/world persistence; the old message resource is preserved but unused.
 
 ### DevTest layout and verification
 
@@ -180,7 +180,7 @@ AUTOMATIC uses a Player-body-only Area2D and polls its current overlaps. Enemies
 6. Apply runtime data to the recreated Player, acquire its lock immediately, place it at the resolved marker, set facing/idle animation, apply camera limits, and wait one physics frame under black for registration.
 7. Fade in (exported default 0.25 seconds), release the lock without overriding hurt/death, and apply an exported 0.25-second arrival cooldown. Emit completion; interruption after arrival keeps the loaded scene and reports failure rather than reviving or replacing the actor.
 
-The manager handles only runtime travel/fade/placement. Loading is synchronous; no async streaming, save system, cinematics, maps, quests, or global event bus are added. Signals are focused on transition start/finish/failure.
+The manager handles only runtime travel/fade/placement. Scene loading is synchronous; Phase 9 extends this same manager with controlled saved-scene restoration. No async streaming, cinematics, maps, or global event bus are added. Signals are focused on transition start/finish/failure.
 
 ### Player recreation and locks
 
@@ -217,7 +217,7 @@ The `Inventory` Autoload owns a dictionary of InventoryEntry RefCounted values (
 
 Distinct item IDs have no slot-capacity limit. One entry per ID stacks up to its definition's limit (99 for the test drink/fragment). Additions are atomic: overflow rejects the entire amount without partial collection. Nonpositive amounts and excessive removals fail; zero quantity removes the entry. Nonstackable items and keys accept one copy, reject subsequent copies, and stay at one. Key-item removal and use are rejected; there is no discard/drop UI for any category.
 
-Signals are `inventory_changed`, `item_added(id, amount)`, `item_removed(id, amount)`, and `item_used(id)`. A small mutation guard protects transactions against reentrant signal callbacks. The manager contains no UI node paths/layout or Player ownership. The inventory survives scene-owned Player recreation and resets only when the running game restarts; there is no serialization.
+Signals are `inventory_changed`, `item_added(id, amount)`, `item_removed(id, amount)`, and `item_used(id)`. A small mutation guard protects transactions against reentrant signal callbacks. The manager contains no UI node paths/layout or Player ownership. The inventory survives scene-owned Player recreation and supports reset and snapshot serialization through Phase 9 SaveManager. Static definitions remain in ItemDatabase.
 
 ### Consumable effects and health
 
@@ -258,4 +258,47 @@ DungeonManager stores one DungeonState per stable ID and emits relevant changes.
 
 TreasureChest exposes four small reward hooks so DungeonChest can reuse the exact opening animation, interruption safety, Player lock, and shared dialogue. DungeonChest records an explicit chest ID and supports inventory, dungeon Small Key, and dungeon-item rewards. Small keys belong exclusively to DungeonState. The new DUNGEON_ITEM ItemData category is unique, protected from removal/consumption, and shown by the existing inventory Key Items filter. Ember Gauntlet data lives in `game/items/data/dungeon_items/`; its placeholder icon remains under `art/items/`.
 
-Dungeon progress exists only in memory for the current session. No disk persistence, overworld quest state, checkpoint system, or story completion rewards are added. See [DUNGEONS.md](DUNGEONS.md) for IDs, reconstruction, the test route, reset behavior, and extension guidance.
+DungeonManager remains the runtime authority. Phase 9 serializes its per-dungeon snapshots to disk; no checkpoint system or story completion rewards are added. See [DUNGEONS.md](DUNGEONS.md) for IDs, reconstruction, the test route, reset behavior, and extension guidance.
+
+
+## Phase 7 quest architecture
+
+QuestData contains authored definitions, QuestObjectiveData describes targets/counts, and QuestRewardData describes ITEM, HEALTH_RESTORE, or NOTHING rewards. QuestDatabase loads an explicit resource list once and validates IDs, definitions, item references, and prerequisites. QuestRuntime owns session state/progress independently; QuestManager returns snapshots so UI callers cannot alter internal progress. Definitions remain unchanged by runtime logic.
+
+QuestManager is a focused Autoload with no rendering responsibility. Inventory item-added signals, successful NPC conversation starts, guarded enemy deaths, quest location entries, and optional accepted interaction IDs feed generic typed events. Only ACTIVE matching objectives update, with progress clamped to requirements. Acceptance counts current item ownership; later item removal does not reverse historical collection. Completed prerequisites gate availability. Ready turn-in quests remain ACTIVE until the configured giver completes final dialogue.
+
+QuestOffer is an optional NPC child configured with a quest ID and dialogue resources. NPC base code has no quest-specific branches. The scene-local dialogue manager adds an optional final Yes/No choice while preserving existing callers and scoped interaction cancellation. Successful turn-in uses Inventory's atomic quest exchange: preflight all removals/rewards, reserve terminal quest state before synchronous inventory signals, commit inventory together, then notify. Ordinary inventory removal cannot consume QUEST_ITEM; only the validated exchange may hand it in. Capacity failure keeps the quest active and charm owned; duplicate rewards are rejected.
+
+QuestJournal is a CanvasLayer Autoload in `game/ui/menus/`, with Active/Completed tabs, quest list, scrollable title/description/objectives, and Close. It refreshes on events/open/selection rather than frames, reads snapshots, and uses Player's existing interaction lock/cancel hooks. Damage, death, or actor removal closes it safely. Named `quest_journal` input uses L/L3; UI focus and actions support keyboard/controller. Notifications reuse InventoryScreen's existing toast.
+
+The quest test area is instanced in DevTest and the transition-test exterior. Mrs. Sato, shrine marker, quest-gated inherited pickup, and location trigger reconstruct from global session state. QuestManager survives scene travel independently of SceneTransitions and DungeonManager; Player and transition scripts are unchanged. Phase 8 adds currency and Phase 9 serializes quest runtime progress. No quest-specific player code or global event bus is added. See [QUESTS.md](QUESTS.md) for APIs, states, event timing, and the complete quest flow.
+
+
+## Phase 8 economy and shops
+
+`Wallet` is the focused currency Autoload (`scripts/shared/wallet_manager.gd`), with exported development starting Yen, bounded nonnegative integer balance, add/spend/affordability APIs, and yen_changed. `YenFormat` supplies one ¥/thousands-separator formatter for CurrencyHUD, ShopScreen, purchase messages, and quest reward feedback. CurrencyHUD is a small persistent CanvasLayer below modal screens; it updates from signals.
+
+ItemData adds buy_price without changing existing item categories/effects. Nonpositive default prices are not normally purchasable. ShopEntryData supplies item ID, optional explicit price override (including free zero), and -1 unlimited / 0 sold out / positive limited stock. ShopData contains stable ID, display name, and typed entries. ShopManager loads an explicit resource list once, validates entries and uniqueness, resolves prices centrally, owns separate runtime stock dictionaries, and processes one-item transactions. It never renders UI or mutates static stock resources.
+
+A purchase validates entry/item/price, stock, funds, and existing per-item inventory limits. Stock and wallet balance are reserved before existing Inventory.add_item emits synchronous events; callbacks see the purchased item's corresponding final balance and stock. Inventory failure rolls wallet/stock back with no currency-change signal. Transaction guards reject nested purchases/spends/removals during synchronous notifications. ShopManager emits focused purchase/stock signals after successful addition. No new inventory capacity rules or replacement Inventory manager are introduced.
+
+NPC base optionally delegates to a configured MerchantOffer child. The existing dialogue's two final choice buttons receive optional labels; Yes/No remain defaults for quests, Buy/Leave are merchant configuration. Only after normal dialogue closure and release of the NPC lock does Buy open ShopScreen. ShopScreen reacquires the same scoped Player interaction lock, supplies Control focus, reads named UI actions, and safely closes on damage/death/removal. Its list/details show icons, prices, owned counts, stock, and feedback; refresh is event-driven, with deferred refresh after guarded mutations. Purchase/quest notifications reuse the existing toast.
+
+Kagami Mart is a WorldArea under `game/world/interiors/kagami_mart/`, with existing Player, camera bounds/spawns, dialogue UI, exit scene door, and placeholder solid walls/shelves/counter/clerk. The clerk owns the counter body so the existing interaction obstruction check accepts the clerk's own solid geometry. The transition-test exterior has one additional store facade/door and store_front return spawn; original house/Room B/dungeon links remain. No store-loading system is added.
+
+QuestRewardData appends YEN without reordering previous enum values. QuestManager preflights combined item/Yen rewards and wraps its existing atomic inventory exchange with Wallet.exchange_yen. Currency failure keeps the charm, item quantities, and active quest intact; terminal reservation prevents duplicate rewards. Automatic capacity-blocked rewards retry on inventory or Yen changes. A Small Favor now gives its original two drinks plus ¥500. Phase 9 persists wallet and limited stock through their manager APIs. See [ECONOMY.md](ECONOMY.md); Phase 9 save integration is described below.
+
+
+## Phase 9 — Save / Load Foundation
+
+`SaveManager` (`scripts/save/save_manager.gd`) owns three slot paths, JSON I/O, validation/migration, active slot, metadata, errors, write guards, and operation signals. It orchestrates snapshots from the existing managers; it contains no parallel inventory, quest, economy, or dungeon runtime. `SaveSchema` prevalidates required profile/version/location and optional section types. `SaveValues` provides defensive scalar/ID/collection conversion. File paths occur only in SaveManager; nodes/resources/definitions are never serialized.
+
+`PlayerProfile` is the single protagonist name and playtime authority. WorldState stores explicitly permanent non-dungeon objects by category and stable ID. Existing TreasureChest/Door/Pickup/Slime opt into persistence; ordinary objects default to their original behavior. PersistentSwitch is a small shared Interactable. DungeonChest, dungeon doors/switches, room clears, and boss encounters continue using DungeonManager exclusively. NPC quest dialogue and the quest charm reconstruct from QuestManager and Inventory; NPC nodes are not saved separately.
+
+Inventory, Wallet, QuestManager, DungeonManager/DungeonState, WorldState, ShopManager, and PlayerProfile expose `to_save_data()`, `load_save_data(data)`, and `reset_runtime_state()` (DungeonState has snapshot/load; manager performs reset). Restore emits refresh signals, suppresses item-added/quest-accepted/completed/reward events, invalidates queued auto-completion callbacks, and recomputes prerequisite availability. Resources remain unchanged. Unknown item/quest IDs are skipped with warnings; bounded quantities, health, Yen, and stock receive safe defaults/clamps.
+
+SceneTransitions preflights the destination WorldArea, exactly one Player, default spawn, and valid camera bounds before any reset. It freezes/fades the old scene, detaches it, invokes the manager reset/apply callback, then adds the new scene while disabled. Scene `_ready()` queries already-restored managers. Player health, cardinal facing, rounded saved position (or default spawn), animation, and camera then restore. After physics registration/fade-in, input resumes and SaveManager emits `game_loaded`. Restore does not emit ordinary travel-arrival events, so loading cannot replay quest objectives. Invalid data/destination leaves the existing runtime intact.
+
+SaveSlots is a small CanvasLayer under `game/ui/menus/`, opened by existing pause input. It uses the existing scoped Player interaction lock and Godot focus, with three slots, metadata, protagonist name, New/Load/Delete, confirmation, and an active-slot Save button. Back is handled before the focused name field consumes it; inactive opening remains unhandled so existing menus retain their cancellation priority. No new input actions or display/startup settings are introduced.
+
+Manual save is restricted to a selected active slot, living NORMAL Player, WorldArea, no transition, and idle mutation managers. It writes/flushes/closes a temporary file, backs up a previous valid primary, then renames the temporary file over the primary. Failure before replacement preserves the old primary. No autosave/cloud/checkpoints, platform APIs, backup recovery UI, settings saves, or later milestone code. See [SAVE_FORMAT.md](../documentation/SAVE_FORMAT.md).

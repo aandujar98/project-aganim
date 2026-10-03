@@ -1,0 +1,7 @@
+[gd_scene format=3]
+[ext_resource type="PackedScene" path="res://game/items/pickup.tscn" id="1"]
+[ext_resource type="Script" path="res://game/quests/quest_pickup.gd" id="2"]
+[node name="QuestPickup" instance=ExtResource("1")]
+script = ExtResource("2")
+item_id = &"lost_lucky_charm"
+required_quest_id = &"a_small_favor"

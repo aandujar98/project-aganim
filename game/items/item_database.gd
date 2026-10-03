@@ -4,7 +4,9 @@ const ITEM_PATHS: Array[String] = [
 	"res://game/items/data/consumables/small_healing_drink.tres",
 	"res://game/items/data/key_items/shrine_charm.tres",
 	"res://game/items/data/materials/spirit_fragment.tres",
-	"res://game/items/data/dungeon_items/ember_gauntlet.tres"
+	"res://game/items/data/dungeon_items/ember_gauntlet.tres",
+	"res://game/items/data/quest_items/lost_lucky_charm.tres",
+	"res://game/items/data/consumables/energy_soda.tres"
 ]
 
 var _items: Dictionary = {}

@@ -129,3 +129,59 @@ func _on_cancelled(interaction_owner: Node) -> void:
 func _fail(reason: String) -> void:
 	push_warning(reason)
 	transition_failed.emit(reason)
+
+
+func restore_game_scene(player_data: Dictionary, apply_managers: Callable) -> bool:
+	if busy or not apply_managers.is_valid():
+		return false
+	var packed: PackedScene = load(str(player_data.scene)) as PackedScene
+	if packed == null:
+		return false
+	var candidate: Node = packed.instantiate()
+	var area: WorldArea = candidate as WorldArea
+	if area == null:
+		candidate.free()
+		return false
+	var spawn: SpawnPoint = area.resolve_spawn(area.default_spawn_id)
+	var bounds: CameraBounds = area.get_camera_bounds()
+	if area.find_player() == null or spawn == null or bounds == null or not bounds.is_valid():
+		area.free()
+		return false
+	busy = true
+	var source: Node = get_tree().current_scene
+	var source_mode: ProcessMode = source.process_mode if source != null else Node.PROCESS_MODE_INHERIT
+	# Freeze the source for deterministic replacement, including menus/dead players.
+	if source != null:
+		source.process_mode = Node.PROCESS_MODE_DISABLED
+	await _fade_to(1.0, fade_out_duration)
+	if get_tree().current_scene != source or (source != null and not is_instance_valid(source)):
+		area.free()
+		if is_instance_valid(source):
+			source.process_mode = source_mode
+		await _fade_to(0.0, fade_in_duration)
+		busy = false
+		return false
+	if source != null:
+		get_tree().root.remove_child(source)
+		source.queue_free()
+	apply_managers.call()
+	area.process_mode = Node.PROCESS_MODE_DISABLED
+	get_tree().root.add_child(area)
+	get_tree().current_scene = area
+	var actor: CharacterBody2D = area.find_player()
+	actor.begin_transition(self)
+	var position: Dictionary = SaveValues.dictionary(player_data.get("position", {}))
+	var facing: Dictionary = SaveValues.dictionary(player_data.get("facing", {"x": 0, "y": 1}))
+	actor.global_position = Vector2(position.get("x", spawn.global_position.x), position.get("y", spawn.global_position.y)).round()
+	actor.apply_runtime_state({"health": player_data.current_health, "max_health": player_data.max_health,
+		"facing": Vector2(facing.x, facing.y), "invulnerability": 0.0})
+	actor.call("_update_animation", false)
+	actor.camera.global_position = actor.global_position
+	actor.camera.force_update_scroll()
+	await get_tree().physics_frame
+	await _fade_to(0.0, fade_in_duration)
+	actor.end_transition(self)
+	area.process_mode = Node.PROCESS_MODE_INHERIT
+	busy = false
+	cooldown_remaining = arrival_cooldown
+	return true

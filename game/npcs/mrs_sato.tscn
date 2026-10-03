@@ -1,0 +1,23 @@
+[gd_scene format=3]
+[ext_resource type="PackedScene" path="res://game/npcs/npc.tscn" id="1"]
+[ext_resource type="Script" path="res://game/quests/quest_offer.gd" id="2"]
+[ext_resource type="Resource" path="res://game/quests/data/dialogue/sato_offer.tres" id="3"]
+[ext_resource type="Resource" path="res://game/quests/data/dialogue/sato_active.tres" id="4"]
+[ext_resource type="Resource" path="res://game/quests/data/dialogue/sato_turn_in.tres" id="5"]
+[ext_resource type="Resource" path="res://game/quests/data/dialogue/sato_completed.tres" id="6"]
+[ext_resource type="Resource" path="res://game/quests/data/dialogue/sato_unavailable.tres" id="7"]
+[node name="MrsSato" instance=ExtResource("1")]
+npc_id = &"mrs_sato"
+interaction_text = "Talk to Mrs. Sato"
+object_id = &"mrs_sato_conversation"
+[node name="Visual" parent="." index="1"]
+color = Color(0.65, 0.38, 0.63, 1)
+[node name="QuestOffer" type="Node" parent="."]
+script = ExtResource("2")
+quest_id = &"a_small_favor"
+offer_dialogue = ExtResource("3")
+active_dialogue = ExtResource("4")
+turn_in_dialogue = ExtResource("5")
+completed_dialogue = ExtResource("6")
+unavailable_dialogue = ExtResource("7")
+offer_prompt = "Will you look for it?"

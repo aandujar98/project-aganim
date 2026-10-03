@@ -2,12 +2,20 @@ extends Area2D
 
 signal collected(pickup: Area2D)
 
+@export var persistent: bool = false
+@export var persistent_id: StringName
 @export var item_id: StringName = &"spirit_fragment"
 @export_range(1, 999, 1) var amount: int = 1
 var _collected: bool = false
 
 
 func _ready() -> void:
+	if persistent and (persistent_id.is_empty() or get_node("/root/WorldState").has_flag(&"collected_pickups", persistent_id)):
+		_collected = true
+		hide()
+		set_deferred("monitoring", false)
+		if persistent_id.is_empty():
+			push_warning("Persistent pickup requires a stable ID.")
 	body_entered.connect(_on_body_entered)
 	var item: ItemData = ItemDatabase.get_item(item_id)
 	$Orb.visible = item == null or item.icon == null
@@ -23,6 +31,8 @@ func _on_body_entered(body: Node2D) -> void:
 	if not Inventory.add_item(item_id, amount):
 		return # Invalid/full/duplicate rewards remain in the world for retry.
 	_collected = true
+	if persistent:
+		get_node("/root/WorldState").set_flag(&"collected_pickups", persistent_id)
 	collected.emit(self)
 	set_deferred("monitoring", false)
 	hide()

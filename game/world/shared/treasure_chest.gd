@@ -3,6 +3,8 @@ extends Interactable
 
 signal opened(reward_item_id: StringName)
 
+@export var persistent: bool = false
+@export var persistent_id: StringName
 @export var reward_item_id: StringName = &"shrine_charm"
 @export_range(1, 999, 1) var reward_amount: int = 1
 @export_range(0.1, 2.0, 0.05) var opening_duration: float = 0.45
@@ -11,6 +13,16 @@ var is_open: bool = false
 var is_opening: bool = false
 var _tween: Tween
 var _reward_data: DialogueData
+
+
+func _ready() -> void:
+	if persistent and persistent_id.is_empty():
+		enabled = false
+		push_warning("Persistent chest requires a stable ID.")
+	elif persistent and get_node("/root/WorldState").has_flag(&"opened_chests", persistent_id):
+		is_open = true
+		enabled = false
+		$Lid.position.y = -10.0
 
 
 func interact(actor: Node, manager: DialogueManager) -> void:
@@ -77,4 +89,5 @@ func _grant_reward() -> bool:
 
 
 func _reward_committed() -> void:
-	pass
+	if persistent:
+		get_node("/root/WorldState").set_flag(&"opened_chests", persistent_id)

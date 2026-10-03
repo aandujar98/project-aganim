@@ -78,7 +78,7 @@ Phase 4 added no inventory, save/world-state persistence, dungeon framework, str
 
 Phase 5 added no save persistence, shops, Yen, equipment, quests, dungeon keys, crafting, sorting, discarding, or quick-use UI. Its approved systems are extended in Phase 6.
 
-## Phase 6 — Reusable Dungeon Foundation (implemented; awaiting acceptance)
+## Phase 6 — Reusable Dungeon Foundation (passed)
 
 - Focused DungeonManager Autoload and per-ID runtime DungeonState; no disk save persistence.
 - Separate configured WorldArea rooms using existing scene transitions, named spawns, scoped Player locks, and camera bounds.
@@ -93,10 +93,45 @@ Phase 5 added no save persistence, shops, Yen, equipment, quests, dungeon keys, 
 
 DevDungeon validates infrastructure only. No final Temple of Embers, story rewards, maps, Boss Keys, music, checkpoints, Game Over system, advanced puzzles/AI, disk saves, or quests. Stop pending milestone approval.
 
-## Phase 7 — Reusable Quest System (not started)
+## Phase 7 — Reusable Quest System (passed)
 
-The supplied Phase 6 request identifies quest objectives/rewards, quest journal, prerequisites, and the first complete side quest as Phase 7. No quest implementation is included in Phase 6.
+- Static QuestData/objective/reward resources and separate QuestRuntime state.
+- Five event-driven objective types, clamped progress, existing inventory initialization, and stable NPC/enemy/location/object IDs.
+- Simple completed-quest prerequisites; AVAILABLE remains distinct from ACTIVE.
+- Reusable NPC offer component, minimal Yes/No choices, reminder/turn-in/post-completion dialogue.
+- Atomic quest-item hand-in and item rewards; optional health restoration/story-only rewards.
+- Active/Completed journal with named keyboard/controller input and existing scoped player locks.
+- Complete A Small Favor side quest, gated Old Lucky Charm, two drinks, and data-only prerequisite follow-up.
+- Session persistence through house/dungeon travel; documentation and regression checks.
 
-## Later phases
+No disk saves, Yen, shops, skill/cosmetic rewards, markers, relationship systems, timers, procedural quests, or advanced branching. Stop pending milestone approval.
 
-Await the full project design brief before assigning further phase ordering or feature schedules.
+## Phase 8 — Yen and Shop System (passed)
+
+- Configurable session Yen wallet, currency signals, shared formatter, and simple HUD.
+- Item default prices, reusable ShopData/ShopEntryData, independent runtime stock.
+- Atomic single-item purchasing through existing inventory with funds/stock/capacity validation and rollback.
+- Buy/Leave merchant choices, keyboard/controller shop screen, existing player-lock/cancellation architecture.
+- Kagami Mart placeholder interior linked to the existing exterior through SceneTransitions.
+- Small Healing Drink ¥300 unlimited, Spirit Fragment ¥500 stock three, Energy Soda ¥250 unlimited with one-HP healing.
+- A Small Favor retains its original two drinks and gains ¥500, with duplicate/capacity safeguards.
+- Session persistence, documentation, and prior-phase regression validation.
+
+Prices/starting Yen are temporary. No selling, dynamic economy, equipment/cosmetic shops, crafting, or disk saves. Stop pending milestone approval.
+
+## Phase 9 — Save / Load Foundation (implemented; awaiting editor acceptance)
+
+- Three independent manual save slots with JSON version 1, metadata, active slot, safe replacement, and a previous valid backup.
+- Central chosen name/playtime and player scene, rounded position, cardinal facing, and HealthComponent data.
+- Existing inventory, wallet, quest, dungeon, and shop managers expose focused snapshot/load/reset APIs; authored resources remain unchanged.
+- Explicit stable-ID world persistence for overworld chests, permanent doors/switches, one-time pickups, and unique enemies; dungeon state stays in DungeonManager.
+- New Game name/slot selection, clean resets, safe loading, keyboard/controller focus, and delete/overwrite confirmation.
+- Required-field/version/location preflight, missing-field defaults, invalid legacy IDs/quantities, corruption errors, and migration hook.
+- Separate-process quest/dungeon/world/economy saves, cross-slot isolation, failed-write safeguards, save UI, and earlier phase regressions validated headlessly.
+- Save format and exact manual acceptance routes documented in `documentation/SAVE_FORMAT.md`.
+
+Implementation is complete. Real user-data directory writes, display layout, and physical-controller behavior remain editor acceptance checks. No autosave/checkpoints, cloud/platform integration, encryption, New Game+, settings syncing, or additional features are included. Stop after Phase 9.
+
+## Next milestone — first polished vertical slice (not started)
+
+The next explicitly identified milestone combines the approved existing systems into a small real section of the opening. Its content/scope requires a separate user request; no additional isolated framework phase is introduced here.

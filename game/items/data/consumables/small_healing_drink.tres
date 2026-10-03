@@ -14,3 +14,4 @@ stackable = true
 max_stack = 99
 use_effect = &"heal_player"
 effect_value = 1
+buy_price = 300

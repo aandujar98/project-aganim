@@ -1,0 +1,40 @@
+[gd_scene format=3]
+[ext_resource type="PackedScene" path="res://game/npcs/mrs_sato.tscn" id="1"]
+[ext_resource type="PackedScene" path="res://game/quests/quest_pickup.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://game/quests/quest_location_trigger.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://game/world/shared/sign.tscn" id="4"]
+[ext_resource type="Resource" path="res://game/quests/data/dialogue/shrine_marker.tres" id="5"]
+[node name="QuestTestArea" type="Node2D"]
+[node name="MrsSato" parent="." instance=ExtResource("1")]
+[node name="SatoLabel" type="Label" parent="."]
+offset_left = -24.0
+offset_top = -40.0
+offset_right = 46.0
+offset_bottom = -25.0
+theme_override_font_sizes/font_size = 9
+mouse_filter = 2
+text = "Mrs. Sato"
+[node name="ShrineGround" type="Polygon2D" parent="."]
+z_index = -1
+position = Vector2(80, 135)
+polygon = PackedVector2Array(-30, -30, 30, -30, 30, 35, -30, 35)
+color = Color(0.63, 0.59, 0.48, 1)
+[node name="ShrineMarker" parent="." instance=ExtResource("4")]
+position = Vector2(80, 122)
+object_id = &"old_shrine_memorial"
+interaction_text = "Read Old Shrine Plaque"
+message = ExtResource("5")
+[node name="ShrineLabel" type="Label" parent="."]
+offset_left = 50.0
+offset_top = 90.0
+offset_right = 115.0
+offset_bottom = 105.0
+theme_override_font_sizes/font_size = 9
+mouse_filter = 2
+text = "OLD SHRINE"
+[node name="LostLuckyCharm" parent="." instance=ExtResource("2")]
+position = Vector2(80, 158)
+[node name="ShrineLocation" parent="." instance=ExtResource("3")]
+position = Vector2(80, 135)
+location_id = &"old_shrine_gate"
+trigger_once = false

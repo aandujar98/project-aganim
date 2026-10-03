@@ -48,7 +48,7 @@ func add_item(item_id: StringName, amount: int = 1) -> bool:
 
 func remove_item(item_id: StringName, amount: int = 1) -> bool:
 	var item: ItemData = ItemDatabase.get_item(item_id)
-	if _changing or item == null or item.category in [ItemData.ItemCategory.KEY_ITEM, ItemData.ItemCategory.DUNGEON_ITEM] or not has_item(item_id, amount):
+	if _changing or item == null or item.category in [ItemData.ItemCategory.KEY_ITEM, ItemData.ItemCategory.DUNGEON_ITEM, ItemData.ItemCategory.QUEST_ITEM] or not has_item(item_id, amount):
 		return false
 	_changing = true
 	_decrease(item_id, amount)
@@ -86,3 +86,72 @@ func _decrease(item_id: StringName, amount: int) -> void:
 	entry.quantity -= amount
 	if entry.quantity == 0:
 		_entries.erase(item_id)
+
+
+func can_exchange_quest_items(removals: Dictionary, additions: Dictionary) -> bool:
+	if _changing:
+		return false
+	for id: StringName in removals:
+		var item: ItemData = ItemDatabase.get_item(id)
+		var amount: int = int(removals[id])
+		if item == null or item.category != ItemData.ItemCategory.QUEST_ITEM or amount <= 0 or not has_item(id, amount):
+			return false
+	for id: StringName in additions:
+		var item: ItemData = ItemDatabase.get_item(id)
+		var amount: int = int(additions[id])
+		if item == null or amount <= 0 or get_quantity(id) - int(removals.get(id, 0)) + amount > item.quantity_limit():
+			return false
+	return true
+
+
+func exchange_quest_items(removals: Dictionary, additions: Dictionary) -> bool:
+	# Snapshot transaction inputs before synchronous notification callbacks.
+	var removed: Dictionary = removals.duplicate()
+	var added: Dictionary = additions.duplicate()
+	if not can_exchange_quest_items(removed, added):
+		return false
+	_changing = true
+	for id: StringName in removed:
+		_decrease(id, int(removed[id]))
+	for id: StringName in added:
+		if not _entries.has(id):
+			_entries[id] = InventoryEntry.new(id)
+		var entry: InventoryEntry = _entries[id]
+		entry.quantity += int(added[id])
+	if not removed.is_empty() or not added.is_empty():
+		inventory_changed.emit()
+	for id: StringName in removed:
+		item_removed.emit(id, int(removed[id]))
+	for id: StringName in added:
+		item_added.emit(id, int(added[id]))
+	_changing = false
+	return true
+
+
+func to_save_data() -> Dictionary:
+	var items: Array[Dictionary] = []
+	for entry: InventoryEntry in get_entries():
+		items.append({"item_id": str(entry.item_id), "quantity": entry.quantity})
+	return {"items": items}
+
+
+func load_save_data(data: Dictionary) -> void:
+	_entries.clear()
+	for raw: Variant in SaveValues.array(data.get("items", [])):
+		var saved: Dictionary = SaveValues.dictionary(raw)
+		var id: StringName = SaveValues.identifier(saved.get("item_id"))
+		if id.is_empty():
+			continue
+		var item: ItemData = ItemDatabase.get_item(id)
+		if item == null:
+			continue # Removed development items do not invalidate the whole slot.
+		var quantity: int = SaveValues.integer(saved.get("quantity"), 0, 0, item.quantity_limit())
+		if quantity > 0 and not _entries.has(id):
+			_entries[id] = InventoryEntry.new(id, quantity)
+	_changing = false
+	last_use_message = ""
+	inventory_changed.emit() # Restore never emits item_added or grants quest progress.
+
+
+func reset_runtime_state() -> void:
+	load_save_data({})

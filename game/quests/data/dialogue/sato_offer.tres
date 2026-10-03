@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="DialogueData" format=3]
+[ext_resource type="Script" path="res://scripts/shared/dialogue_data.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/shared/dialogue_line.gd" id="2"]
+[sub_resource type="Resource" id="Line0"]
+script = ExtResource("2")
+speaker_name = "Mrs. Sato"
+text = "My lucky charm is missing."
+[sub_resource type="Resource" id="Line1"]
+script = ExtResource("2")
+speaker_name = "Mrs. Sato"
+text = "I think I dropped it near the old shrine."
+[sub_resource type="Resource" id="Line2"]
+script = ExtResource("2")
+speaker_name = "Mrs. Sato"
+text = "It isn't worth much, but I've carried it for years."
+[resource]
+script = ExtResource("1")
+lines = Array[ExtResource("2")]([SubResource("Line0"), SubResource("Line1"), SubResource("Line2")])

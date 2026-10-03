@@ -22,6 +22,16 @@ Inventory="*res://game/items/inventory_manager.gd"
 InventoryScreen="*res://game/ui/inventory/inventory_ui.tscn"
 SceneTransitions="*res://game/main/scene_transition_manager.tscn"
 DungeonManager="*res://game/dungeons/shared/dungeon_manager.gd"
+Wallet="*res://scripts/shared/wallet_manager.gd"
+ShopManager="*res://game/items/shop_manager.gd"
+QuestManager="*res://game/quests/quest_manager.gd"
+QuestJournal="*res://game/ui/menus/quest_journal.tscn"
+ShopScreen="*res://game/ui/menus/shop_ui.tscn"
+CurrencyHUD="*res://game/ui/hud/currency_hud.tscn"
+WorldState="*res://scripts/save/world_state_manager.gd"
+PlayerProfile="*res://scripts/save/player_profile.gd"
+SaveManager="*res://scripts/save/save_manager.gd"
+SaveSlots="*res://game/ui/menus/save_slots.tscn"
 
 [display]
 
@@ -136,6 +146,13 @@ pause={
 "deadzone": 0.2,
 "events": Array[InputEvent]([Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":16,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":4194305,"physical_keycode":0,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
 , Object(InputEventJoypadButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"button_index":6,"pressure":0.0,"pressed":false,"script":null)
+])
+}
+
+quest_journal={
+"deadzone": 0.5,
+"events": Array[InputEvent]([Object(InputEventKey,"physical_keycode":76)
+, Object(InputEventJoypadButton,"device":-1,"button_index":7)
 ])
 }
 

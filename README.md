@@ -13,7 +13,7 @@ Project Aganim is a 2D top-down action-adventure RPG inspired by The Legend of Z
 
 ## Current phase
 
-**Phase 6 — Reusable Dungeon Foundation.** Phases 0–5 have passed. DevDungeon is a placeholder systems prototype with runtime dungeon state, keys, persistent doors/switches/chests, enemy-clear rooms, an Ember Gauntlet puzzle, and configured Slime mini-boss/boss encounters. Existing movement, combat, interaction, inventory, and room travel are preserved. Progress survives room travel and overworld re-entry during the current game session. Disk saves and Phase 7 quests are not implemented.
+**Phase 9 — Save / Load Foundation (implemented; awaiting editor acceptance).** Phases 0–8 have passed. Three manual save slots preserve the chosen name, location, player health/position/facing, inventory, Yen, quests, dungeon progress, configured world objects, and limited shop stock. Saves are versioned JSON with validation, safe replacement, and a previous-save backup. Existing managers remain authoritative during play. No autosave, cloud save, or later milestone is implemented.
 
 The starting speed is 90 pixels per second, adjustable through the Player's exported `movement_speed`. `Input.get_vector()` prevents faster diagonals and preserves gamepad analog strength. Movement starts and stops immediately. Facing follows the stronger axis; equal diagonals use the vertical direction. Idle retains the last facing direction. The existing polygons remain placeholder art, with a directional marker and discrete one-pixel walk bob driven by AnimationPlayer.
 
@@ -55,7 +55,7 @@ Placeholder attacks use visible Area2D shapes and code timing, rather than final
 7. Touch the two cyan bottle pickups and blue fragment in the lower-left of this section. They add two Small Healing Drinks and one Spirit Fragment to inventory, disappear only after successful addition, and do not block movement. The old temporary pickup counter is removed.
 8. Test facing away and standing farther from objects; no interaction should start. Repeat the movement and combat tests below/above the section. Interaction is unavailable during attack, hurt, or death. Damage during dialogue cancels it; damage during chest opening cancels the animation without a reward and allows a later retry. Death cannot be cleared by closing a message.
 
-Local doors/chests/pickups reset when DevTest restarts; restarting the running game also resets inventory. There is no save persistence. The NPC has no schedules, pathfinding, branching conversation, or final art. Dialogue uses whole lines without a typewriter effect. Other worlds must instance the shared dialogue UI and assign it to the Player's InteractionDetector, as DevTest does. Dialogue remains scene-local; transitions, item lookup, runtime inventory, and its screen use focused Autoloads. F5 continues to run the preserved original district.
+Local doors/chests/pickups reset when DevTest restarts; restarting without loading a slot starts fresh. Phase 9 saves restore inventory, Yen, quests, and shop stock; the ordinary DevTest objects still reset locally. The NPC has no schedules, pathfinding, branching conversation, or final art. Dialogue uses whole lines without a typewriter effect. Other worlds must instance the shared dialogue UI and assign it to the Player's InteractionDetector, as DevTest does. Dialogue remains scene-local; transitions, item lookup, runtime inventory, and its screen use focused Autoloads. F5 continues to run the preserved original district.
 
 Godot settings require no manual changes. In the editor, verify the 384 × 216 viewport still scales in whole pixels, dialogue text is readable without clipping at your window size, and the west face button matches your connected controller. Optional **Debug → Visible Collision Shapes** helps inspect interaction/body shapes. Physical controller testing remains a manual check; automated tests use Godot input events.
 
@@ -71,7 +71,7 @@ Godot settings require no manual changes. In the editor, verify the 384 × 216 v
 
 Each transition area has a WorldArea root, exactly one reusable Player instance, a CameraBounds node, unique SpawnPoint IDs including `default`, and a shared DialogueUI. Door/zone destination paths are Inspector properties. Spawn-facing priority is entrance override → enabled spawn direction → previous player facing. Coordinates round to whole pixels on arrival. Safe spatial placement, a 0.25-second arrival cooldown, and exit-before-retrigger guards prevent arrival loops.
 
-The manager validates a loaded destination before removing the current scene. A missing requested ID warns and uses the scene's configured default; invalid scenes, missing defaults/bounds, or duplicate Players leave the source intact. Health/max health, remaining invulnerability, and facing transfer at runtime. Scene-local doors/chests/pickups/enemies may reset on reload. The Phase 5 inventory Autoload persists during travel; no save/world-state system is added. Transition destinations currently require the WorldArea contract; earlier standalone scenes have not been converted.
+The manager validates a loaded destination before removing the current scene. A missing requested ID warns and uses the scene's configured default; invalid scenes, missing defaults/bounds, or duplicate Players leave the source intact. Health/max health, remaining invulnerability, and facing transfer at runtime. Scene-local doors/chests/pickups/enemies may reset on reload. The Phase 5 inventory Autoload persists during travel; Phase 9 adds separate snapshot restoration and explicitly configured world persistence, described below. Transition destinations currently require the WorldArea contract; earlier standalone scenes have not been converted.
 
 ## Inventory and item test
 
@@ -86,7 +86,7 @@ The manager validates a loaded destination before removing the current scene. A 
 
 Item definitions live in `game/items/data/`, with 16 × 16 placeholder SVG icons in `art/items/`. Stable IDs are `small_healing_drink`, `shrine_charm`, and `spirit_fragment`; display names can change independently. Stackable drink/fragment entries cap at 99 per ID; additions above the remaining limit reject the entire amount. There is no slot limit. Nonstackable/key items are unique and a second copy is rejected. Failed pickups remain in the world (magenta diamond marks missing data/icons); step away and re-enter to retry. Failed chest rewards keep the chest closed, including an already-owned unique reward.
 
-Inventory is session-only. Overworld chests/pickups may reset on scene reload even though inventory stays intact. Phase 6 adds separate runtime persistence for dungeon chests and keys; Small Keys do not enter inventory. There is no disk save persistence, shops, Yen, equipment, quest integration, discarding, sorting, hotbar, or item dropping. The original unused Phase 3 chest-message resource remains on disk for preservation and is no longer referenced by chest logic. Placeholder UI/physical-controller acceptance remains a manual check on the developer's display/device.
+Inventory remains authoritative at runtime and is included in Phase 9 manual saves. Overworld chests/pickups may reset on scene reload even though inventory stays intact. Phase 6 adds separate runtime persistence for dungeon chests and keys; Small Keys do not enter inventory. Phase 9 adds disk saves; equipment, discarding, sorting, hotbar, and item dropping remain absent. The original unused Phase 3 chest-message resource remains on disk for preservation and is no longer referenced by chest logic. Placeholder UI/physical-controller acceptance remains a manual check on the developer's display/device.
 
 ## DevDungeon test
 
@@ -98,13 +98,29 @@ Defeat both Slimes with Space/J, take healing drinks from the supplies chest, ob
 
 Release and press E again to close chest/locked-door/brazier messages. Ordinary combat rooms and both boss encounters lock exits until all designated enemies die. Revisit rooms without stopping the game to verify persistent chests, doors, switches, clears, item ownership, and completion. See [Dungeon architecture and exact manual test route](docs/DUNGEONS.md).
 
-Dungeon state is runtime-only. Death retains the existing stop/restart limitation; no checkpoint or Game Over screen is added. For a completely fresh test, stop and restart the game. The debug-only `DungeonManager.reset_dungeon(&"dev_dungeon")` clears dungeon state, then requires a room reload to rebuild enemies; it intentionally keeps inventory. An already-owned Gauntlet is acknowledged by its reset chest without creating a duplicate. Hide the room's DungeonDebug CanvasLayer to disable the development display.
+DungeonManager remains authoritative at runtime and Phase 9 persists its snapshots. Death allows manual Load/New Game; no checkpoint or Game Over screen is added. For a completely fresh test, stop/restart without loading a slot, or choose New Game. The debug-only `DungeonManager.reset_dungeon(&"dev_dungeon")` clears dungeon state, then requires a room reload to rebuild enemies; it intentionally keeps inventory. An already-owned Gauntlet is acknowledged by its reset chest without creating a duplicate. Hide the room's DungeonDebug CanvasLayer to disable the development display.
 
 Reload/reopen the project in an already-running editor to register DungeonManager. Review any unsaved editor tabs before reloading; do not save an old scene over the updated disk version. Verify crisp integer scaling, camera limits, controller interactions, and visual legibility on your display. No display, renderer, input-map, or startup-scene setting changed in Phase 6.
 
+## A Small Favor quest test
+
+Open `game/world/districts/transition_test/test_exterior.tscn` and press F6. Mrs. Sato is at (96, 105), west of the house. Face her and press E/gamepad west. Advance three lines, then choose Yes with Enter/Space/gamepad south; choose No to leave the quest available. The charm appears near the shrine at (176, 263) only after acceptance. Touch it, open the journal with L/L3, and verify the return instruction. Return to Mrs. Sato and finish all three lines to exchange the charm for two Small Healing Drinks and ¥500. Repeated conversations give post-completion dialogue and no additional reward.
+
+DevTest also contains this reusable test area: Mrs. Sato at (640, 125), shrine/charm to her southeast at (720, 260)/(720, 283). Existing Slimes remain active. Journal controls lock the player, but enemies continue simulating; damage safely closes it. Use arrows/D-pad or Tab for focus, up/down to scroll focused details, and Escape/gamepad east to close. The journal has Active and Completed tabs. Quest items appear under inventory Key Items and have no Use action.
+
+Enter/exit the house or dungeon without stopping to verify quest persistence and restoration of NPC/pickup state. Stop/restart starts fresh unless a saved slot is loaded. Reload an already-open editor to register QuestManager and QuestJournal; review unsaved tabs first. Display/rendering/startup settings are unchanged. See [QUESTS.md](docs/QUESTS.md) for contracts, edge cases, and the complete acceptance route.
+
+## Kagami Mart shop test
+
+Run `game/world/districts/transition_test/test_exterior.tscn` with F6. The HUD starts at **¥3,000**. Kagami Mart is northeast of the test house: face the cyan door at **(590, 120)** from below and press E/gamepad west. Inside, approach the counter at (272, 86), face the clerk, and interact. Advance “Welcome! Need anything?”, then select **Buy** or **Leave**. Confirm opens the shop without buying automatically.
+
+Use Up/Down or D-pad to select; Enter/Space/controller south buys one. Tab/right reaches Buy/Leave buttons. Escape/controller east closes to player control. Small Healing Drink costs ¥300 (unlimited), Spirit Fragment costs ¥500 (stock three), and Energy Soda costs ¥250 (unlimited; heals one HP through existing item use). The shop shows price, owned count, stock, and insufficient-funds feedback. Movement, attacks, other menus, and travel stay locked; damage/death cancels safely.
+
+Face the store's south door from above to exit. Re-enter without stopping: Yen, inventory, and limited stock persist. Complete A Small Favor to earn two drinks plus ¥500 once. Stop/restart starts fresh unless a saved slot is loaded. Reload an already-open editor after reviewing unsaved tabs to register Wallet, ShopManager, ShopScreen, and CurrencyHUD. See [ECONOMY.md](docs/ECONOMY.md) for exact test arithmetic, resource conventions, transaction guarantees, and limitations.
+
 ## Input defaults
 
-Movement, attack, interact, and inventory actions are active. Other gameplay and menu actions remain configured only; their behavior is not implemented.
+Movement, attack, interact, inventory, and quest journal actions are active. Other gameplay and menu actions remain configured only; their behavior is not implemented.
 
 - Movement: WASD / arrows; gamepad left stick / D-pad.
 - Attack: Space / J; south face button (Xbox A).
@@ -114,6 +130,7 @@ Movement, attack, interact, and inventory actions are active. Other gameplay and
 - Item: F; right shoulder.
 - Ability: Q; north face button (Xbox Y).
 - Inventory: I; Back / Select.
+- Quest journal: L; left-stick click (L3).
 - UI confirm: Enter / keypad Enter / Space; south face button (A).
 - UI back: Escape; east face button (B).
 - UI navigation: arrows / Tab / Shift+Tab; D-pad / left stick.
@@ -122,10 +139,27 @@ Movement, attack, interact, and inventory actions are active. Other gameplay and
 
 F and Q are provisional keyboard defaults for item and ability. Gamepad labels depend on the device; mappings use Godot's standard button layout and accept any controller. Letter bindings use physical key positions. Game code should read named actions, not physical keys.
 
+## Manual saves and New Game — Phase 9
+
+1. Review unsaved editor tabs before reloading the project so the new `WorldState`, `PlayerProfile`, `SaveManager`, and `SaveSlots` Autoloads register. F5 still launches the original Main scene.
+2. Press **Escape** or controller **Start**. Choose a slot with arrows/D-pad, Tab to the name field, enter 1–24 characters, and choose **New**. An occupied slot requires confirmation; its previous file is replaced only by a later manual Save. The new game begins in TestExterior at default spawn with six health, ¥3,000, empty inventory, and clean progress.
+3. Close other gameplay menus. Open Escape/Start and choose **Save**. It saves the **active** slot, regardless of the highlighted slot. Save requires a living player in normal gameplay in a WorldArea. There is no autosave, including at New Game or on quit.
+4. Stop the game and run again. Escape/Start → select occupied slot → **Load** restores that slot. Metadata shows name, area, elapsed time, and last save in UTC. **Delete** requires confirmation and removes only the selected slot and its backup.
+5. Keyboard Tab/Shift+Tab and arrows, Enter/Space, and controller focus/confirm/back work. Escape/Start closes the screen; controller east/B cancels. Name entry uses a keyboard; no controller text keyboard is added. The screen locks the player, while world simulation continues; damage cancels it safely.
+
+Saves: `user://saves/slot_01.json` through `slot_03.json`; version **1**. On macOS this project normally resolves to `~/Library/Application Support/Godot/app_userdata/Project Aganim/saves/`. The prior valid primary is kept as `.json.bak`. Failed/corrupt loads preserve the current runtime and keep the file. There is no automatic backup recovery.
+
+TestExterior's new southwest persistence row has a chest at (90, 330), a permanent door at (145, 330), a switch at (190, 350), and a one-time pickup at (95, 380). These opt into stable world IDs. Existing ordinary objects continue their earlier reset behavior. Dungeon objects retain DungeonManager ownership.
+
+See [SAVE_FORMAT.md](documentation/SAVE_FORMAT.md) for the format, restore order, APIs, and exact cross-slot/quest/dungeon/shop acceptance routes. Automated disk/restart tests used a temporary project copy because this session could not write to the real Godot user-data save directory. Verify real `user://saves/` writes and physical-controller/layout behavior in the editor. Display, renderer, input bindings, and startup scene are preserved. Earlier Main/DevTest are standalone sandboxes; start New Game to enter the WorldArea save route.
+
 ## Documentation
 
 - [Architecture](docs/ARCHITECTURE.md)
 - [Roadmap](docs/ROADMAP.md)
 - [Dungeon foundation](docs/DUNGEONS.md)
+- [Save format and Phase 9 acceptance tests](documentation/SAVE_FORMAT.md)
+- [Quest system and A Small Favor walkthrough](docs/QUESTS.md)
+- [Yen, shops, and Kagami Mart](docs/ECONOMY.md)
 
 Godot-generated `.godot/` data is ignored by Git. Keep source assets, `.import` metadata, and GDScript `.gd.uid` files under version control. Empty directories are not tracked by Git until populated.

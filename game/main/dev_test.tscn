@@ -12,6 +12,8 @@
 [ext_resource type="PackedScene" path="res://game/items/pickup.tscn" id="8_pickup"]
 [ext_resource type="PackedScene" path="res://game/ui/dialogue/dialogue_ui.tscn" id="9_dialogue"]
 
+[ext_resource type="PackedScene" path="res://game/quests/quest_test_area.tscn" id="quest_area"]
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_WestBlock"]
 size = Vector2(50, 28)
 
@@ -287,3 +289,6 @@ theme_override_font_sizes/font_size = 10
 mouse_filter = 2
 
 [editable path="Player"]
+
+[node name="QuestTestArea" parent="." instance=ExtResource("quest_area")]
+position = Vector2(640, 125)

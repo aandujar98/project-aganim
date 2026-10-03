@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="QuestData" format=3]
+[ext_resource type="Script" path="res://game/quests/quest_data.gd" id="1"]
+[ext_resource type="Script" path="res://game/quests/quest_objective_data.gd" id="2"]
+[sub_resource type="Resource" id="Talk"]
+script = ExtResource("2")
+type = 0
+target_id = &"shrine_keeper"
+description = "Development prerequisite check; no quest content is offered yet."
+[resource]
+script = ExtResource("1")
+id = &"shrine_rumors_followup"
+title = "Shrine Rumors (data test)"
+description = "Prerequisite validation only. This quest has no playable content yet."
+objectives = Array[ExtResource("2")]([SubResource("Talk")])
+prerequisite_quest_ids = Array[StringName]([&"a_small_favor"])
+auto_complete = false

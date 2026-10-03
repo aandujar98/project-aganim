@@ -50,3 +50,32 @@ theme_override_colors/font_color = Color(0.65, 0.74, 0.8, 1)
 theme_override_font_sizes/font_size = 9
 text = "Interact: continue / close"
 horizontal_alignment = 2
+
+[node name="Choices" type="HBoxContainer" parent="Panel"]
+visible = false
+offset_left = 8.0
+offset_top = 46.0
+offset_right = 360.0
+offset_bottom = 70.0
+theme_override_constants/separation = 8
+alignment = 2
+
+[node name="Yes" type="Button" parent="Panel/Choices"]
+custom_minimum_size = Vector2(54, 22)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+focus_neighbor_left = NodePath("../No")
+focus_neighbor_right = NodePath("../No")
+focus_next = NodePath("../No")
+focus_previous = NodePath("../No")
+text = "Yes"
+
+[node name="No" type="Button" parent="Panel/Choices"]
+custom_minimum_size = Vector2(54, 22)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+focus_neighbor_left = NodePath("../Yes")
+focus_neighbor_right = NodePath("../Yes")
+focus_next = NodePath("../Yes")
+focus_previous = NodePath("../Yes")
+text = "No"

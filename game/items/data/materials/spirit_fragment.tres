@@ -14,3 +14,4 @@ stackable = true
 max_stack = 99
 use_effect = &""
 effect_value = 0
+buy_price = 500

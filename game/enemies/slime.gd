@@ -2,6 +2,9 @@ extends CharacterBody2D
 
 enum EnemyState { IDLE, CHASING, ATTACKING, HURT, DEAD }
 
+@export var persistent: bool = false
+@export var persistent_id: StringName
+@export var enemy_type_id: StringName = &"slime"
 @export var movement_speed: float = 35.0
 @export_range(8.0, 48.0, 1.0) var attack_range: float = 24.0
 @export_range(0.05, 1.0, 0.01) var attack_duration: float = 0.25
@@ -25,6 +28,11 @@ var _knockback_speed: float = 0.0
 
 
 func _ready() -> void:
+	if persistent and persistent_id.is_empty():
+		push_warning("Persistent enemy needs a stable ID: " + str(get_path()))
+	if persistent and (persistent_id.is_empty() or get_node("/root/WorldState").has_flag(&"defeated_unique_enemies", persistent_id)):
+		queue_free()
+		return
 	health.died.connect(_on_died)
 	hurtbox.hit_received.connect(_on_hit)
 	detection.body_exited.connect(_on_target_exited)
@@ -96,6 +104,11 @@ func _on_hit(hit: DamageData) -> void:
 
 
 func _on_died() -> void:
+	if state == EnemyState.DEAD:
+		return
+	if persistent:
+		get_node("/root/WorldState").set_flag(&"defeated_unique_enemies", persistent_id)
+	get_node("/root/QuestManager").record_event(QuestObjectiveData.ObjectiveType.DEFEAT_ENEMY, enemy_type_id)
 	state = EnemyState.DEAD
 	_state_remaining = death_delay
 	velocity = Vector2.ZERO

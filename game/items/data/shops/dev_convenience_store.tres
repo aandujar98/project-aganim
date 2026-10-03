@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ShopData" format=3]
+[ext_resource type="Script" path="res://game/items/shop_data.gd" id="1"]
+[ext_resource type="Script" path="res://game/items/shop_entry_data.gd" id="2"]
+[sub_resource type="Resource" id="Drink"]
+script = ExtResource("2")
+item_id = &"small_healing_drink"
+[sub_resource type="Resource" id="Fragment"]
+script = ExtResource("2")
+item_id = &"spirit_fragment"
+stock = 3
+[sub_resource type="Resource" id="Soda"]
+script = ExtResource("2")
+item_id = &"energy_soda"
+[resource]
+script = ExtResource("1")
+id = &"dev_convenience_store"
+display_name = "Kagami Mart"
+entries = Array[ExtResource("2")]([SubResource("Drink"), SubResource("Fragment"), SubResource("Soda")])

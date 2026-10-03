@@ -94,3 +94,25 @@ func reset_dungeon(id: StringName) -> void:
 		return
 	_states[id] = DungeonState.new(id)
 	state_changed.emit(id)
+
+
+func to_save_data() -> Dictionary:
+	var data: Dictionary = {}
+	for id: StringName in _states:
+		data[str(id)] = get_state(id).to_save_data()
+	return data
+
+
+func load_save_data(data: Dictionary) -> void:
+	_states.clear()
+	active_dungeon_id = &""
+	for raw: Variant in data:
+		var id: StringName = SaveValues.identifier(raw)
+		if not id.is_empty() and data[raw] is Dictionary:
+			var state: DungeonState = DungeonState.new(id)
+			state.load_save_data(data[raw])
+			_states[id] = state
+
+
+func reset_runtime_state() -> void:
+	load_save_data({})
