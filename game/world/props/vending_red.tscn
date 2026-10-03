@@ -1,0 +1,27 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://art/environments/props/vending_red.png" id="1_uryo7"]
+[ext_resource type="Material" path="res://resources/shared/materials/additive_glow.tres" id="2_5mvtw"]
+[ext_resource type="Texture2D" path="res://art/effects/glow_48.png" id="3_3dr5r"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_yrq12"]
+size = Vector2(16, 6)
+
+[node name="VendingRed" type="StaticBody2D" unique_id=1786897017]
+collision_mask = 0
+
+[node name="Sprite" type="Sprite2D" parent="." unique_id=834496225]
+texture = ExtResource("1_uryo7")
+centered = false
+offset = Vector2(-8, -32)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=687646449]
+position = Vector2(0, -3)
+shape = SubResource("RectangleShape2D_yrq12")
+
+[node name="Glow" type="Sprite2D" parent="." unique_id=1419410934]
+modulate = Color(0.7, 0.85, 1, 0.28)
+z_index = 20
+material = ExtResource("2_5mvtw")
+position = Vector2(0, -14)
+texture = ExtResource("3_3dr5r")

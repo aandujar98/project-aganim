@@ -1,0 +1,18 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://art/environments/props/ticket_gate.png" id="1_d7j2n"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_7h4w0"]
+size = Vector2(10, 6)
+
+[node name="TicketGate" type="StaticBody2D" unique_id=1860646292]
+collision_mask = 0
+
+[node name="Sprite" type="Sprite2D" parent="." unique_id=520892950]
+texture = ExtResource("1_d7j2n")
+centered = false
+offset = Vector2(-7, -24)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1944269791]
+position = Vector2(0, -3)
+shape = SubResource("RectangleShape2D_7h4w0")

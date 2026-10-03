@@ -1,0 +1,18 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://art/environments/props/bush_large.png" id="1_11kfx"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_rvoo3"]
+size = Vector2(30, 6)
+
+[node name="BushLarge" type="StaticBody2D" unique_id=1501246482]
+collision_mask = 0
+
+[node name="Sprite" type="Sprite2D" parent="." unique_id=1860158824]
+texture = ExtResource("1_11kfx")
+centered = false
+offset = Vector2(-17, -23)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1926432532]
+position = Vector2(0, -3)
+shape = SubResource("RectangleShape2D_rvoo3")

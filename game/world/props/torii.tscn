@@ -1,0 +1,41 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://art/environments/props/torii.png" id="1_wceyy"]
+[ext_resource type="Material" path="res://resources/shared/materials/additive_glow.tres" id="2_so1px"]
+[ext_resource type="Texture2D" path="res://art/effects/glow_48.png" id="3_0ewmw"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1ompb"]
+size = Vector2(13, 8)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1bi2x"]
+size = Vector2(13, 8)
+
+[node name="Torii" type="StaticBody2D" unique_id=1029372681]
+collision_mask = 0
+
+[node name="Sprite" type="Sprite2D" parent="." unique_id=1604493951]
+texture = ExtResource("1_wceyy")
+centered = false
+offset = Vector2(-56, -86)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1751745644]
+position = Vector2(-34, -4)
+shape = SubResource("RectangleShape2D_1ompb")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="." unique_id=1450475281]
+position = Vector2(34, -4)
+shape = SubResource("RectangleShape2D_1bi2x")
+
+[node name="Glow" type="Sprite2D" parent="." unique_id=1681899488]
+modulate = Color(1, 0.6, 0.24, 0.44)
+z_index = 20
+material = ExtResource("2_so1px")
+position = Vector2(-23, -52)
+texture = ExtResource("3_0ewmw")
+
+[node name="Glow2" type="Sprite2D" parent="." unique_id=1148969144]
+modulate = Color(1, 0.6, 0.24, 0.44)
+z_index = 20
+material = ExtResource("2_so1px")
+position = Vector2(23, -52)
+texture = ExtResource("3_0ewmw")

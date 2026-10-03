@@ -4,10 +4,14 @@
 layer = 5
 script = ExtResource("1")
 [node name="Yen" type="Label" parent="."]
-offset_left = 280.0
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -104.0
 offset_top = 4.0
-offset_right = 378.0
+offset_right = -6.0
 offset_bottom = 20.0
+grow_horizontal = 0
 mouse_filter = 2
 theme_override_font_sizes/font_size = 10
 theme_override_colors/font_color = Color(1, 0.93, 0.61, 1)

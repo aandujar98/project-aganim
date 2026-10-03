@@ -1,4 +1,5 @@
 [gd_scene format=3]
+[ext_resource type="Texture2D" path="res://art/characters/npc_kagami_clerk.png" id="sheet"]
 [ext_resource type="PackedScene" path="res://game/npcs/npc.tscn" id="1"]
 [ext_resource type="Script" path="res://game/npcs/merchant_offer.gd" id="2"]
 [ext_resource type="Resource" path="res://game/npcs/convenience_clerk_dialogue.tres" id="3"]
@@ -8,13 +9,13 @@ size = Vector2(88, 12)
 npc_id = &"kagami_mart_clerk"
 interaction_text = "Talk to clerk"
 [node name="Visual" parent="." index="1"]
-color = Color(0.3, 0.76, 0.59, 1)
+texture = ExtResource("sheet")
 [node name="MerchantOffer" type="Node" parent="."]
 script = ExtResource("2")
 shop_id = &"dev_convenience_store"
 greeting = ExtResource("3")
 [node name="Counter" type="StaticBody2D" parent="."]
-position = Vector2(0, 18)
+position = Vector2(0, 2)
 collision_layer = 1
 collision_mask = 6
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Counter"]

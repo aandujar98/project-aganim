@@ -1,0 +1,18 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://art/environments/props/cherry_tree.png" id="1_o1dmh"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pitju"]
+size = Vector2(8, 5)
+
+[node name="CherryTree" type="StaticBody2D" unique_id=2012010695]
+collision_mask = 0
+
+[node name="Sprite" type="Sprite2D" parent="." unique_id=1159915671]
+texture = ExtResource("1_o1dmh")
+centered = false
+offset = Vector2(-30, -57)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1856140523]
+position = Vector2(0, -2.5)
+shape = SubResource("RectangleShape2D_pitju")

@@ -1,0 +1,18 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://art/environments/props/ac_unit.png" id="1_tv47s"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5wtdq"]
+size = Vector2(16, 5)
+
+[node name="AcUnit" type="StaticBody2D" unique_id=455950217]
+collision_mask = 0
+
+[node name="Sprite" type="Sprite2D" parent="." unique_id=647971800]
+texture = ExtResource("1_tv47s")
+centered = false
+offset = Vector2(-9, -16)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1571438878]
+position = Vector2(0, -2.5)
+shape = SubResource("RectangleShape2D_5wtdq")

@@ -35,14 +35,14 @@ SaveSlots="*res://game/ui/menus/save_slots.tscn"
 
 [display]
 
-window/size/viewport_width=384
-window/size/viewport_height=216
-window/size/window_width_override=1152
-window/size/window_height_override=648
+window/size/viewport_width=640
+window/size/viewport_height=360
+window/size/window_width_override=1280
+window/size/window_height_override=720
 window/stretch/mode="viewport"
 window/stretch/scale_mode="integer"
-window/size/min_width=384
-window/size/min_height=216
+window/size/min_width=640
+window/size/min_height=360
 
 [input]
 
@@ -174,6 +174,7 @@ quest_journal={
 [rendering]
 
 textures/canvas_textures/default_texture_filter=0
+environment/defaults/default_clear_color=Color(0.039, 0.043, 0.09, 1)
 rendering_device/driver.windows="d3d12"
 renderer/rendering_method="mobile"
 2d/snap/snap_2d_transforms_to_pixel=true

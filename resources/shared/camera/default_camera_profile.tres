@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="CameraProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/shared/camera_profile.gd" id="1_profile"]
+
+[resource]
+script = ExtResource("1_profile")
+zoom = 1.0
+framing_offset = Vector2i(0, -10)
+snap_to_pixels = true

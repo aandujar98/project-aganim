@@ -8,11 +8,22 @@ signal interaction_cancelled(interaction_owner: Node)
 enum PlayerState { NORMAL, ATTACKING, HURT, DEAD, INTERACTING }
 
 @export var movement_speed: float = 90.0
+## Speed while the sprint action is held; plays the run_* animations.
+@export var run_speed: float = 135.0
 @export_range(0.05, 1.0, 0.01) var attack_duration: float = 0.25
 @export_range(0.02, 0.5, 0.01) var attack_active_time: float = 0.10
 @export_range(0.05, 1.0, 0.01) var hurt_duration: float = 0.18
+## Sword placement relative to the feet origin: center of the body plus reach along facing.
+@export var sword_origin: Vector2 = Vector2(0, -10)
+@export_range(8.0, 40.0, 1.0) var sword_reach: float = 20.0
+
+const SPRITE_DIRECTIONS: Array[String] = ["right", "down_right", "down", "down_left", "left", "up_left", "up", "up_right"]
 
 var facing_direction: Vector2 = Vector2.DOWN
+## Eight-way facing used only to pick sprite animations; gameplay facing stays cardinal.
+var sprite_direction: Vector2 = Vector2.DOWN
+var _sprite_synced_facing: Vector2 = Vector2.DOWN
+var _running: bool = false
 var state: PlayerState = PlayerState.NORMAL
 var _transition_owner: Node
 var _interaction_owner: Node
@@ -33,7 +44,6 @@ func _ready() -> void:
 	health.died.connect(_on_died)
 	hurtbox.hit_received.connect(_on_hit)
 	_update_animation(false)
-	camera.global_position = global_position.round()
 
 
 func _physics_process(delta: float) -> void:
@@ -66,8 +76,6 @@ func _physics_process(delta: float) -> void:
 		_update_animation(get_real_velocity().length_squared() > 0.01)
 	interaction_detector.refresh(facing_direction, state == PlayerState.NORMAL and not is_transition_locked())
 	_update_damage_feedback()
-	# Snap rendering only; physics and knockback remain continuous.
-	camera.global_position = global_position.round()
 
 
 func _move_normal() -> void:
@@ -78,7 +86,10 @@ func _move_normal() -> void:
 			facing_direction = Vector2.RIGHT if direction.x > 0.0 else Vector2.LEFT
 		else:
 			facing_direction = Vector2.DOWN if direction.y > 0.0 else Vector2.UP
-	velocity = direction * movement_speed
+		sprite_direction = Vector2.from_angle(roundi(direction.angle() / (PI / 4.0)) * (PI / 4.0))
+		_sprite_synced_facing = facing_direction
+	_running = not direction.is_zero_approx() and Input.is_action_pressed("sprint")
+	velocity = direction * (run_speed if _running else movement_speed)
 	if Input.is_action_just_pressed("attack"):
 		_begin_attack()
 
@@ -89,7 +100,7 @@ func _begin_attack() -> void:
 	velocity = Vector2.ZERO
 	_update_animation(false)
 	# Freeze the stored facing for the whole swing; no diagonal attack shapes.
-	sword.position = Vector2(0, 10) + facing_direction * 24.0
+	sword.position = sword_origin + facing_direction * sword_reach
 	sword.rotation = facing_direction.angle() - PI / 2.0
 	sword.begin_attack(minf(attack_active_time, attack_duration))
 	attack_started.emit()
@@ -148,14 +159,15 @@ func _update_damage_feedback() -> void:
 
 
 func _update_animation(is_moving: bool) -> void:
-	var facing: String = "down"
-	if facing_direction == Vector2.UP:
-		facing = "up"
-	elif facing_direction == Vector2.LEFT:
-		facing = "left"
-	elif facing_direction == Vector2.RIGHT:
-		facing = "right"
-	var animation: StringName = StringName(("walk_" if is_moving else "idle_") + facing)
+	# Facing set from outside (spawns, transitions, loads) overrides the last movement direction.
+	if facing_direction != _sprite_synced_facing:
+		sprite_direction = facing_direction
+		_sprite_synced_facing = facing_direction
+	var index: int = wrapi(roundi(sprite_direction.angle() / (PI / 4.0)), 0, 8)
+	var prefix: String = "idle_"
+	if is_moving:
+		prefix = "run_" if _running else "walk_"
+	var animation: StringName = StringName(prefix + SPRITE_DIRECTIONS[index])
 	if animations.current_animation != animation:
 		animations.play(animation)
 		animations.advance(0.0)

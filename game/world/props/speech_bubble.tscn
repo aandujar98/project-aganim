@@ -1,0 +1,10 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://art/environments/props/speech_bubble.png" id="1_heci2"]
+
+[node name="SpeechBubble" type="Node2D" unique_id=1924282268]
+
+[node name="Sprite" type="Sprite2D" parent="." unique_id=287891854]
+texture = ExtResource("1_heci2")
+centered = false
+offset = Vector2(-7, -12)

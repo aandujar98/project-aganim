@@ -1,0 +1,18 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://art/environments/props/utility_pole.png" id="1_4qo6k"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ara1b"]
+size = Vector2(4, 3)
+
+[node name="UtilityPole" type="StaticBody2D" unique_id=742043463]
+collision_mask = 0
+
+[node name="Sprite" type="Sprite2D" parent="." unique_id=45897180]
+texture = ExtResource("1_4qo6k")
+centered = false
+offset = Vector2(-12, -89)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=584874299]
+position = Vector2(0, -1.5)
+shape = SubResource("RectangleShape2D_ara1b")

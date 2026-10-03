@@ -1,0 +1,10 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://art/environments/props/ramen_vsign.png" id="1_u315a"]
+
+[node name="RamenVsign" type="Node2D" unique_id=425744232]
+
+[node name="Sprite" type="Sprite2D" parent="." unique_id=1740720114]
+texture = ExtResource("1_u315a")
+centered = false
+offset = Vector2(-6, -50)

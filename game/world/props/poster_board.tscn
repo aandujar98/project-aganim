@@ -1,0 +1,10 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://art/environments/props/poster_board.png" id="1_3uv3v"]
+
+[node name="PosterBoard" type="Node2D" unique_id=2123484121]
+
+[node name="Sprite" type="Sprite2D" parent="." unique_id=1918287708]
+texture = ExtResource("1_3uv3v")
+centered = false
+offset = Vector2(-10, -16)

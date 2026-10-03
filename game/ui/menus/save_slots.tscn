@@ -19,10 +19,18 @@ anchor_bottom = 1.0
 mouse_filter = 2
 theme = SubResource("Theme")
 [node name="Panel" type="Panel" parent="Screen"]
-offset_left = 8.0
-offset_top = 8.0
-offset_right = 376.0
-offset_bottom = 208.0
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -184.0
+offset_top = -100.0
+offset_right = 184.0
+offset_bottom = 100.0
+grow_horizontal = 2
+grow_vertical = 2
 theme_override_styles/panel = SubResource("PanelStyle")
 
 [node name="Heading" type="Label" parent="Screen/Panel"]

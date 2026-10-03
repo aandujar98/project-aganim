@@ -1,0 +1,35 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://art/environments/props/street_lamp.png" id="1_c0p47"]
+[ext_resource type="Material" path="res://resources/shared/materials/additive_glow.tres" id="2_c1j8q"]
+[ext_resource type="Texture2D" path="res://art/effects/glow_48.png" id="3_c3ywn"]
+[ext_resource type="Texture2D" path="res://art/effects/glow_72.png" id="4_x1rkh"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_mne1q"]
+size = Vector2(4, 3)
+
+[node name="StreetLamp" type="StaticBody2D" unique_id=1233484525]
+collision_mask = 0
+
+[node name="Sprite" type="Sprite2D" parent="." unique_id=1896252405]
+texture = ExtResource("1_c0p47")
+centered = false
+offset = Vector2(-6, -44)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=609592455]
+position = Vector2(0, -1.5)
+shape = SubResource("RectangleShape2D_mne1q")
+
+[node name="Glow" type="Sprite2D" parent="." unique_id=80223640]
+modulate = Color(1, 0.6, 0.24, 0.52)
+z_index = 20
+material = ExtResource("2_c1j8q")
+position = Vector2(0, -36)
+texture = ExtResource("3_c3ywn")
+
+[node name="Glow2" type="Sprite2D" parent="." unique_id=2068142952]
+modulate = Color(1, 0.6, 0.24, 0.14)
+z_index = 20
+material = ExtResource("2_c1j8q")
+position = Vector2(0, -2)
+texture = ExtResource("4_x1rkh")

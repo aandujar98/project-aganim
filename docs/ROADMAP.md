@@ -132,6 +132,27 @@ Prices/starting Yen are temporary. No selling, dynamic economy, equipment/cosmet
 
 Implementation is complete. Real user-data directory writes, display layout, and physical-controller behavior remain editor acceptance checks. No autosave/checkpoints, cloud/platform integration, encryption, New Game+, settings syncing, or additional features are included. Stop after Phase 9.
 
+## Visual direction foundation (implemented; awaiting approval)
+
+- `docs/ART_DIRECTION.md` is the visual bible. It sets the 640 × 360 internal resolution (to match the Sakura City mockup's framing at integer zoom 1.0), 16 × 16 tiles, 32 × 32 chibi frames, and the painted-night palette with additive glow lighting. It also covers the HUD, animation and import rules.
+- **Original art matching the mockup:**
+  - protagonist and nine NPC sheets
+  - a 71-tile city tileset
+  - 37 prop scenes: station, shrine, shops, canal, train, lamps, poles
+  - stepped glow textures
+  - HUD art, a proportional pixel font, and preview item icons
+- **Engine and code changes:**
+  - Player re-anchored to its feet for y-sorting.
+  - `CameraProfile` / `GameCamera` added.
+  - `CameraBounds` centres undersized rooms.
+  - Legacy menus and the dialogue panel re-anchored for 640 × 360.
+  - `GameHUD` (hearts, orbs, Yen, quick slots, minimap) and the `AmbientNPC` crowd scene added.
+- `visual_test_district.tscn` (Sakura City) validates scale, framing, density, HUD, lighting and pixel clarity.
+
+Protagonist locked to the character reference sheet: an 8-direction idle/walk/run sprite sheet, and hold-sprint running with `run_speed`.
+
+Display settings changed (resolution, window size, clear colour). There are no new gameplay systems; quick slots and magic are display-only.
+
 ## Next milestone — first polished vertical slice (not started)
 
 The next explicitly identified milestone combines the approved existing systems into a small real section of the opening. Its content/scope requires a separate user request; no additional isolated framework phase is introduced here.

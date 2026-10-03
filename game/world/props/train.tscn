@@ -1,0 +1,18 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://art/environments/props/train.png" id="1_4fsjp"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_gdncp"]
+size = Vector2(100, 12)
+
+[node name="Train" type="StaticBody2D" unique_id=1161807490]
+collision_mask = 0
+
+[node name="Sprite" type="Sprite2D" parent="." unique_id=1171618177]
+texture = ExtResource("1_4fsjp")
+centered = false
+offset = Vector2(-50, -52)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1845432385]
+position = Vector2(0, -6)
+shape = SubResource("RectangleShape2D_gdncp")

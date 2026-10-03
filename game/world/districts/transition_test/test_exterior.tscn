@@ -191,10 +191,14 @@ mouse_filter = 2
 text = ""
 
 [node name="Instructions" type="Label" parent="DebugOverlay"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
 offset_left = 6.0
-offset_top = 196.0
+offset_top = -20.0
 offset_right = 378.0
-offset_bottom = 212.0
+offset_bottom = -4.0
+grow_vertical = 0
 theme_override_font_sizes/font_size = 9
 mouse_filter = 2
 text = "House: face cyan door + Interact · East: walk into blue zone"

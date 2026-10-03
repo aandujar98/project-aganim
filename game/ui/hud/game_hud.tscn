@@ -1,0 +1,111 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://game/ui/hud/game_hud.gd" id="1_hud"]
+[ext_resource type="Script" path="res://game/ui/hud/heart_meter.gd" id="2_hearts"]
+[ext_resource type="Script" path="res://game/ui/hud/magic_meter.gd" id="3_magic"]
+[ext_resource type="Script" path="res://game/ui/hud/pixel_text.gd" id="4_text"]
+[ext_resource type="Script" path="res://game/ui/hud/quick_slot.gd" id="5_slot"]
+[ext_resource type="Script" path="res://game/ui/hud/minimap.gd" id="6_minimap"]
+[ext_resource type="Texture2D" path="res://art/items/starter_sword.png" id="7_sword"]
+
+[node name="GameHUD" type="CanvasLayer"]
+layer = 5
+script = ExtResource("1_hud")
+
+[node name="TopLeft" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 158.0
+offset_bottom = 48.0
+mouse_filter = 2
+
+[node name="Hearts" type="Control" parent="TopLeft"]
+layout_mode = 1
+anchors_preset = 0
+offset_right = 150.0
+offset_bottom = 11.0
+mouse_filter = 2
+script = ExtResource("2_hearts")
+
+[node name="Magic" type="Control" parent="TopLeft"]
+layout_mode = 1
+anchors_preset = 0
+offset_top = 14.0
+offset_right = 150.0
+offset_bottom = 26.0
+mouse_filter = 2
+script = ExtResource("3_magic")
+
+[node name="Yen" type="Control" parent="TopLeft"]
+layout_mode = 1
+anchors_preset = 0
+offset_top = 31.0
+offset_right = 80.0
+offset_bottom = 40.0
+mouse_filter = 2
+script = ExtResource("4_text")
+
+[node name="TopRight" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -192.0
+offset_top = 8.0
+offset_right = -6.0
+offset_bottom = 82.0
+grow_horizontal = 0
+mouse_filter = 2
+
+[node name="SlotA" type="Control" parent="TopRight"]
+layout_mode = 1
+anchors_preset = 0
+offset_right = 26.0
+offset_bottom = 35.0
+mouse_filter = 2
+script = ExtResource("5_slot")
+selected = true
+icon = ExtResource("7_sword")
+
+[node name="SlotY" type="Control" parent="TopRight"]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 30.0
+offset_right = 56.0
+offset_bottom = 35.0
+mouse_filter = 2
+script = ExtResource("5_slot")
+button = "Y"
+item_id = &"small_healing_drink"
+
+[node name="SlotX" type="Control" parent="TopRight"]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 60.0
+offset_right = 86.0
+offset_bottom = 35.0
+mouse_filter = 2
+script = ExtResource("5_slot")
+button = "X"
+item_id = &"energy_soda"
+
+[node name="SlotR" type="Control" parent="TopRight"]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 90.0
+offset_right = 116.0
+offset_bottom = 35.0
+mouse_filter = 2
+script = ExtResource("5_slot")
+button = "R"
+
+[node name="Minimap" type="Control" parent="TopRight"]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 126.0
+offset_right = 186.0
+offset_bottom = 74.0
+mouse_filter = 2
+script = ExtResource("6_minimap")

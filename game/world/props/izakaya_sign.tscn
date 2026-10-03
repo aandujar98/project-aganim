@@ -1,0 +1,10 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://art/environments/props/izakaya_sign.png" id="1_3lrqt"]
+
+[node name="IzakayaSign" type="Node2D" unique_id=773507248]
+
+[node name="Sprite" type="Sprite2D" parent="." unique_id=1728771721]
+texture = ExtResource("1_3lrqt")
+centered = false
+offset = Vector2(-6, -38)

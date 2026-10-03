@@ -1,0 +1,10 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://art/environments/props/konbini_sign.png" id="1_7s7x7"]
+
+[node name="KonbiniSign" type="Node2D" unique_id=73535674]
+
+[node name="Sprite" type="Sprite2D" parent="." unique_id=1248472539]
+texture = ExtResource("1_7s7x7")
+centered = false
+offset = Vector2(-64, -18)

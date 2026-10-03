@@ -6,8 +6,8 @@ Project Aganim is a 2D top-down action-adventure RPG inspired by The Legend of Z
 
 - Godot 4.x; currently validated with **Godot 4.7.2 stable**.
 - GDScript; no plugins or external dependencies.
-- Internal resolution: **384 × 216**.
-- Viewport stretch, preserved aspect ratio, and integer scaling; default window size is 1152 × 648 (3×).
+- Internal resolution: **640 × 360** (changed from 384 × 216 to match the visual target; see docs/ART_DIRECTION.md).
+- Viewport stretch, preserved aspect ratio, and integer scaling; default window size is 1280 × 720 (2×).
 - Nearest-neighbor texture filtering and 2D transform pixel snapping.
 - The existing Mobile renderer is preserved.
 
@@ -15,7 +15,7 @@ Project Aganim is a 2D top-down action-adventure RPG inspired by The Legend of Z
 
 **Phase 9 — Save / Load Foundation (implemented; awaiting editor acceptance).** Phases 0–8 have passed. Three manual save slots preserve the chosen name, location, player health/position/facing, inventory, Yen, quests, dungeon progress, configured world objects, and limited shop stock. Saves are versioned JSON with validation, safe replacement, and a previous-save backup. Existing managers remain authoritative during play. No autosave, cloud save, or later milestone is implemented.
 
-The starting speed is 90 pixels per second, adjustable through the Player's exported `movement_speed`. `Input.get_vector()` prevents faster diagonals and preserves gamepad analog strength. Movement starts and stops immediately. Facing follows the stronger axis; equal diagonals use the vertical direction. Idle retains the last facing direction. The existing polygons remain placeholder art, with a directional marker and discrete one-pixel walk bob driven by AnimationPlayer.
+The starting speed is 90 pixels per second, adjustable through the Player's exported `movement_speed`. `Input.get_vector()` prevents faster diagonals and preserves gamepad analog strength. Movement starts and stops immediately. Facing follows the stronger axis; equal diagonals use the vertical direction. Idle retains the last facing direction. AnimationPlayer drives 4-frame idle/walk/run clips in 8 sprite directions on `art/characters/player/player_spritesheet.png`; gameplay facing stays cardinal (see docs/ART_DIRECTION.md).
 
 ## Open and run
 
@@ -26,9 +26,9 @@ The starting speed is 90 pixels per second, adjustable through the Player's expo
 
 F5 runs the preserved `game/main/main.tscn` and outdoor test district using the same updated Player; that scene does not contain combat enemies. The startup scene has not been replaced.
 
-DevTest has open space, three original blocks, boundary walls, an L-shaped corner, and a 28-pixel gap between the central walls. Follow the horizontal path through the gap. Verify wall blocking, diagonal wall sliding, corners, four idle facings, and camera following across the 768 × 432 sandbox. Collision is an editable 18 × 10 rectangle at the feet. Camera smoothing stays off; camera positions round to whole world pixels while physics positions remain continuous.
+DevTest has open space, three original blocks, boundary walls, an L-shaped corner, and a 28-pixel gap between the central walls. Follow the horizontal path through the gap. Verify wall blocking, diagonal wall sliding, corners, four idle facings, and camera following across the 768 × 432 sandbox. Collision is an editable 12 × 8 rectangle at the feet (the Player origin). Camera smoothing stays off; camera positions round to whole world pixels while physics positions remain continuous.
 
-Placeholder colors and shapes are not final protagonist art. Animation walks reflect actual movement; pushing straight into a wall returns to idle while retaining the attempted facing.
+Animation walks reflect actual movement; pushing straight into a wall returns to idle while retaining the attempted facing.
 
 ## Combat test
 
@@ -57,7 +57,7 @@ Placeholder attacks use visible Area2D shapes and code timing, rather than final
 
 Local doors/chests/pickups reset when DevTest restarts; restarting without loading a slot starts fresh. Phase 9 saves restore inventory, Yen, quests, and shop stock; the ordinary DevTest objects still reset locally. The NPC has no schedules, pathfinding, branching conversation, or final art. Dialogue uses whole lines without a typewriter effect. Other worlds must instance the shared dialogue UI and assign it to the Player's InteractionDetector, as DevTest does. Dialogue remains scene-local; transitions, item lookup, runtime inventory, and its screen use focused Autoloads. F5 continues to run the preserved original district.
 
-Godot settings require no manual changes. In the editor, verify the 384 × 216 viewport still scales in whole pixels, dialogue text is readable without clipping at your window size, and the west face button matches your connected controller. Optional **Debug → Visible Collision Shapes** helps inspect interaction/body shapes. Physical controller testing remains a manual check; automated tests use Godot input events.
+Godot settings require no manual changes. In the editor, verify the 640 × 360 viewport still scales in whole pixels, dialogue text is readable without clipping at your window size, and the west face button matches your connected controller. Optional **Debug → Visible Collision Shapes** helps inspect interaction/body shapes. Physical controller testing remains a manual check; automated tests use Godot input events.
 
 ## Transition test route
 
@@ -118,15 +118,33 @@ Use Up/Down or D-pad to select; Enter/Space/controller south buys one. Tab/right
 
 Face the store's south door from above to exit. Re-enter without stopping: Yen, inventory, and limited stock persist. Complete A Small Favor to earn two drinks plus ¥500 once. Stop/restart starts fresh unless a saved slot is loaded. Reload an already-open editor after reviewing unsaved tabs to register Wallet, ShopManager, ShopScreen, and CurrencyHUD. See [ECONOMY.md](docs/ECONOMY.md) for exact test arithmetic, resource conventions, transaction guarantees, and limitations.
 
+## Visual target: Sakura City
+
+Open `game/world/districts/visual_test/visual_test_district.tscn` and press **F6**. This night district replicates the Sakura City gameplay mockup with original art:
+
+- Sakura Station, with ticket gates and an attendant.
+- A crossing to a shrine: a large torii over stone stairs, kitsune statues, 神社 banners and a small hokora.
+- A paved main street with lantern lamps and utility-pole wires.
+- A ramen/izakaya house with chōchin lanterns, a karaoke building and a konbini with vending machines.
+- A canal with railings and floating petals, a train, and a crowd of NPCs.
+
+Talk to the Resident (speech bubble) or the girl on the shrine stairs with E or gamepad west.
+
+The HUD shows hearts, magic orbs, Yen, A/Y/X/R quick slots and the minimap. The bomb, potion and boots slots are presentation previews.
+
+The internal resolution is now **640 × 360**, integer-scaled to a 1280 × 720 window. Older menus are centred and the dialogue panel sits at bottom-centre. Rooms smaller than the screen are centred on a dark background.
+
+The rules, sizes, lighting technique and import workflow are in [ART_DIRECTION.md](docs/ART_DIRECTION.md).
+
 ## Input defaults
 
-Movement, attack, interact, inventory, and quest journal actions are active. Other gameplay and menu actions remain configured only; their behavior is not implemented.
+Movement, sprint, attack, interact, inventory, and quest journal actions are active. Other gameplay and menu actions remain configured only; their behavior is not implemented.
 
 - Movement: WASD / arrows; gamepad left stick / D-pad.
 - Attack: Space / J; south face button (Xbox A).
 - Interact: E; west face button (Xbox X).
 - Dodge: Shift / K; east face button (Xbox B).
-- Sprint: Ctrl; left shoulder.
+- Sprint: Ctrl; left shoulder. Hold while moving to run (run animations, 135 px/s).
 - Item: F; right shoulder.
 - Ability: Q; north face button (Xbox Y).
 - Inventory: I; Back / Select.
@@ -161,5 +179,6 @@ See [SAVE_FORMAT.md](documentation/SAVE_FORMAT.md) for the format, restore order
 - [Save format and Phase 9 acceptance tests](documentation/SAVE_FORMAT.md)
 - [Quest system and A Small Favor walkthrough](docs/QUESTS.md)
 - [Yen, shops, and Kagami Mart](docs/ECONOMY.md)
+- [Art direction (visual bible)](docs/ART_DIRECTION.md)
 
 Godot-generated `.godot/` data is ignored by Git. Keep source assets, `.import` metadata, and GDScript `.gd.uid` files under version control. Empty directories are not tracked by Git until populated.

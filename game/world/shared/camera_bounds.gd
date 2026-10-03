@@ -5,19 +5,22 @@ extends Node2D
 
 
 func is_valid() -> bool:
-	var viewport_size: Vector2i = Vector2i(
-		ProjectSettings.get_setting("display/window/size/viewport_width"),
-		ProjectSettings.get_setting("display/window/size/viewport_height")
-	)
-	return bounds.size.x >= viewport_size.x and bounds.size.y >= viewport_size.y
+	# Rooms smaller than the view are allowed; apply_to() centers them.
+	return bounds.size.x > 0 and bounds.size.y > 0
 
 
 func apply_to(camera: Camera2D) -> void:
 	var origin: Vector2i = Vector2i(global_position.round()) + bounds.position
-	camera.limit_left = origin.x
-	camera.limit_top = origin.y
-	camera.limit_right = origin.x + bounds.size.x
-	camera.limit_bottom = origin.y + bounds.size.y
+	var limits: Rect2i = Rect2i(origin, bounds.size)
+	# Grow undersized rooms evenly around their center so they sit mid-screen
+	# (the clear color fills the margin) instead of pinning to the top-left.
+	var view: Vector2i = Vector2i((camera.get_viewport_rect().size / camera.zoom).ceil())
+	var extra: Vector2i = (view - limits.size).max(Vector2i.ZERO)
+	limits = limits.grow_individual(extra.x >> 1, extra.y >> 1, extra.x - (extra.x >> 1), extra.y - (extra.y >> 1))
+	camera.limit_left = limits.position.x
+	camera.limit_top = limits.position.y
+	camera.limit_right = limits.end.x
+	camera.limit_bottom = limits.end.y
 	camera.position_smoothing_enabled = false
 	camera.limit_smoothed = false
 	camera.reset_smoothing()

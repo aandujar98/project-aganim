@@ -1,0 +1,18 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://art/environments/props/fox_statue.png" id="1_pf4pb"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1j5d8"]
+size = Vector2(16, 6)
+
+[node name="FoxStatue" type="StaticBody2D" unique_id=1753985724]
+collision_mask = 0
+
+[node name="Sprite" type="Sprite2D" parent="." unique_id=1630412722]
+texture = ExtResource("1_pf4pb")
+centered = false
+offset = Vector2(-9, -32)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=499676595]
+position = Vector2(0, -3)
+shape = SubResource("RectangleShape2D_1j5d8")

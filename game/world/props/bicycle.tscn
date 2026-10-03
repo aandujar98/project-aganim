@@ -1,0 +1,18 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://art/environments/props/bicycle.png" id="1_ekivu"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_i2bp4"]
+size = Vector2(22, 4)
+
+[node name="Bicycle" type="StaticBody2D" unique_id=37632837]
+collision_mask = 0
+
+[node name="Sprite" type="Sprite2D" parent="." unique_id=237450203]
+texture = ExtResource("1_ekivu")
+centered = false
+offset = Vector2(-14, -19)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1793100400]
+position = Vector2(0, -2)
+shape = SubResource("RectangleShape2D_i2bp4")

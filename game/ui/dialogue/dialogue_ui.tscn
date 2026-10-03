@@ -15,10 +15,17 @@ layer = 10
 script = ExtResource("1_manager")
 
 [node name="Panel" type="Panel" parent="."]
-offset_left = 8.0
-offset_top = 136.0
-offset_right = 376.0
-offset_bottom = 208.0
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -184.0
+offset_top = -80.0
+offset_right = 184.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("PanelStyle")
 
